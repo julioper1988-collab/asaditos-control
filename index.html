@@ -1611,6 +1611,7 @@ if (pullIsLocked()) {
         }
 
         function switchTab(tabName, btnEl) {
+            // Tabs UI
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
 
@@ -1618,6 +1619,7 @@ if (pullIsLocked()) {
             if (content) content.classList.add('active');
             if (btnEl) btnEl.classList.add('active');
 
+            // Render / recalcular según pestaña
             if (tabName === 'inventario') {
                 renderInventory();
             } else if (tabName === 'cierre') {
@@ -1627,13 +1629,6 @@ if (pullIsLocked()) {
             } else if (tabName === 'sync') {
                 checkSyncStatus();
                 refreshJsonbinUI();
-            }
-        } else if (tabName === 'cierre') {
-                calculateTotals();
-            } else if (tabName === 'reportes') {
-                renderHistorial();
-            } else if (tabName === 'sync') {
-                checkSyncStatus();
             }
         }
 
