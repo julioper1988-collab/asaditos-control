@@ -1,0 +1,3086 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ASADITOS">
+    <title>ASADITOS EL MEJOR - Sistema de Gestión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .date-display {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .sync-status {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        .sync-status.synced {
+            background: rgba(40, 167, 69, 0.3);
+        }
+
+        .sync-status.syncing {
+            background: rgba(255, 193, 7, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: #495057;
+            transition: all 0.3s;
+            border: none;
+            background: transparent;
+            font-size: 1.1em;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .summary-box h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .summary-box .amount {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .positive {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .negative {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .product-item:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #495057;
+        }
+
+        .product-price {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .contador-billetes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .billete-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .billete-valor {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .billete-input {
+            width: 100%;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .billete-total {
+            margin-top: 10px;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+            margin: 0;
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab {
+                font-size: 0.9em;
+                padding: 15px 10px;
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #495057;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .gastos-fijos {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .gasto-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .gasto-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .sync-controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sync-code {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin: 15px 0;
+            letter-spacing: 5px;
+        }
+
+        /* ===== RESPONSIVE MÓVIL ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .container {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .header {
+                padding: 12px 10px;
+                border-radius: 0;
+            }
+
+            .header h1 {
+                font-size: 1.3em;
+            }
+
+            .header .subtitle {
+                font-size: 0.85em;
+            }
+
+            .tabs {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .tab {
+                font-size: 0.75em;
+                padding: 12px 10px;
+                min-width: 90px;
+            }
+
+            .tab-content {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 12px;
+            }
+
+            .card h2 {
+                font-size: 1.1em;
+                margin-bottom: 12px;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            /* Tablas responsive - Formato de tarjetas en móvil */
+            table {
+                font-size: 0.75em;
+            }
+
+            table thead {
+                display: none;
+            }
+
+            table tbody {
+                display: block;
+            }
+
+            table tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 2px solid #667eea;
+                border-radius: 10px;
+                background: #f8f9fa;
+                padding: 12px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            table td {
+                display: grid;
+                grid-template-columns: 120px 1fr;
+                padding: 8px 0;
+                border: none;
+                text-align: left;
+                gap: 10px;
+                align-items: center;
+            }
+
+            table td:before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: #667eea;
+                font-size: 0.9em;
+            }
+
+            table td strong {
+                font-size: 1.1em;
+            }
+
+            table input {
+                width: 100% !important;
+                max-width: 150px;
+                font-size: 1.2em !important;
+                padding: 12px !important;
+                border: 2px solid #667eea !important;
+                border-radius: 6px !important;
+            }
+
+            /* Botones más grandes y táctiles */
+            .btn {
+                width: 100%;
+                margin: 8px 0;
+                font-size: 1em;
+                padding: 14px !important;
+                min-height: 48px;
+            }
+
+            /* Inputs más grandes para táctil */
+            input, select, textarea {
+                font-size: 16px !important;
+                padding: 14px !important;
+                min-height: 48px;
+                border-radius: 8px !important;
+            }
+
+            /* Formularios */
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-group label {
+                font-size: 1em;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+            /* Gastos más legibles */
+            .gasto-item {
+                flex-wrap: wrap;
+                font-size: 0.95em;
+                padding: 12px 8px;
+            }
+
+            /* Summary boxes */
+            .summary-box {
+                padding: 15px;
+                margin: 12px 0;
+            }
+
+            .summary-box .amount {
+                font-size: 1.6em;
+            }
+
+            /* Stats grid */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            /* Product items */
+            .product-item {
+                padding: 12px;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Pantallas muy pequeñas */
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.1em;
+            }
+
+            .tab {
+                font-size: 0.7em;
+                padding: 10px 6px;
+                min-width: 75px;
+            }
+
+            table input {
+                font-size: 1.1em !important;
+                padding: 10px !important;
+            }
+        }
+    
+        /* Floating cloud button */
+        #cloudFab {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: #667eea;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+        }
+        #cloudFab:hover { filter: brightness(0.95); }
+        #cloudFab:active { transform: translateY(1px); }
+
+    </style>
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍗 ASADITOS EL MEJOR</h1>
+            <div class="subtitle">Sistema de Gestión Integral</div>
+            <div class="date-display" id="currentDate"></div>
+            <div class="sync-status" id="syncStatus">
+                <span id="syncIcon">🔄</span> <span id="syncText">Sincronizado</span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('productos', this)">📦 Productos</button>
+            <button class="tab" onclick="switchTab('inventario', this)">📊 Inventario</button>
+            <button class="tab" onclick="switchTab('cierre', this)">💰 Cierre</button>
+            <button class="tab" onclick="switchTab('reportes', this)">📈 Reportes</button>
+            <button class="tab" onclick="switchTab('sync', this)">☁️ Sincronizar</button>
+        </div>
+
+        <div class="content">
+            <!-- TAB PRODUCTOS -->
+            <div id="productos" class="tab-content active">
+                <div class="card">
+                    <h2>Agregar Nuevo Producto</h2>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Nombre del Producto</label>
+                            <input type="text" id="newProductName" placeholder="Ej: ASADITO CARNE">
+                        </div>
+                        <div class="form-group">
+                            <label>Precio de Venta (Gs)</label>
+                            <input type="number" id="newProductPrice" placeholder="5000">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Costo por Unidad (Gs)</label>
+                        <input type="number" id="newProductCost" placeholder="3500">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="addProduct()">➕ Agregar Producto</button>
+                </div>
+
+                <div class="card">
+                    <h2>Lista de Productos</h2>
+                    <div id="productsList"></div>
+                </div>
+            </div>
+
+            <!-- TAB INVENTARIO -->
+            <div id="inventario" class="tab-content">
+                <div class="card">
+                    <h2>Control de Inventario Diario</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>📅 Seleccionar Fecha</label>
+                                <input type="date" id="inventoryDate" onchange="changeInventoryDate()" style="font-size: 1.1em; font-weight: bold;">
+                            </div>
+                            <div style="display: flex; align-items: flex-end; gap: 10px;">
+                                <button class="btn btn-info" onclick="setToday()">📆 Ir a Hoy</button>
+                                <button class="btn btn-primary" onclick="goToPreviousDay()">⬅️ Día Anterior</button>
+                                <button class="btn btn-primary" onclick="goToNextDay()">Día Siguiente ➡️</button>
+                            </div>
+                        </div>
+                        <div id="selectedDateDisplay" style="text-align: center; margin-top: 15px; font-size: 1.2em; color: #667eea; font-weight: bold;"></div>
+                    </div>
+                    
+                    <div id="inventarioList"></div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                        <button class="btn btn-success" onclick="saveInventory()" style="flex: 1;">💾 Guardar Inventario</button>
+                        <button class="btn btn-info" onclick="document.getElementById('importCSVFile').click()" style="flex: 1;">📥 Importar CSV</button>
+                    </div>
+                    <input type="file" id="importCSVFile" accept=".csv" style="display: none;" onchange="importarCSV()">
+                </div>
+
+                <div class="card">
+                    <h2>Resumen de Ventas</h2>
+                    <div id="ventasResumen"></div>
+                </div>
+            </div>
+
+            <!-- TAB CIERRE -->
+            <div id="cierre" class="tab-content">
+                <div class="card">
+                    <h2>Cierre de Caja</h2>
+                    
+                    <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #17a2b8;">
+                        <h3 style="color: #0c5460; margin-bottom: 10px;">💵 Fondo de Caja Inicial (Sencillo)</h3>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <input type="number" id="fondoCaja" value="300000" onchange="calculateTotals()" 
+                                style="font-size: 1.3em; text-align: center; font-weight: bold; border: 2px solid #17a2b8;">
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #0c5460;">Sencillo que se entrega al inicio del día</p>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>📅 Seleccionar Fecha</label>
+                                <input type="date" id="cierreDate" onchange="changeCierreDate()" style="font-size: 1.1em; font-weight: bold;">
+                            </div>
+                            <div style="display: flex; align-items: flex-end; gap: 10px;">
+                                <button class="btn btn-info" onclick="setCierreToday()">📆 Ir a Hoy</button>
+                                <button class="btn btn-primary" onclick="goToPreviousDayCierre()">⬅️ Día Anterior</button>
+                                <button class="btn btn-primary" onclick="goToNextDayCierre()">Día Siguiente ➡️</button>
+                            </div>
+                        </div>
+                        <div id="selectedCierreDateDisplay" style="text-align: center; margin-top: 15px; font-size: 1.2em; color: #667eea; font-weight: bold;"></div>
+                    </div>
+                    
+                    <h3 style="color: #667eea; margin: 20px 0;">Arqueo de Caja</h3>
+                    
+                    <h3 style="color: #667eea; margin: 20px 0;">Billetes</h3>
+                    <div class="contador-billetes" id="billetes"></div>
+
+                    <h3 style="color: #667eea; margin: 20px 0;">Monedas</h3>
+                    <div class="contador-billetes" id="monedas"></div>
+
+                    <div class="summary-box" style="margin-top: 30px;">
+                        <h3>Total en Caja</h3>
+                        <div class="amount" id="totalCaja">0 Gs</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Otros Ingresos</h2>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>💳 Tarjetas (Gs)</label>
+                            <input type="number" id="tarjetas" value="0" onchange="calculateTotals()" style="font-size: 1.2em; text-align: center;">
+                        </div>
+                        <div class="form-group">
+                            <label>🛵 Pedidos Ya (Gs)</label>
+                            <input type="number" id="pedidosYa" value="0" onchange="calculateTotals()" style="font-size: 1.2em; text-align: center;">
+                        </div>
+                    </div>
+
+                    <div class="summary-box" style="margin-top: 20px;">
+                        <h3>Total Ingresos (Efectivo + Tarjetas + Pedidos Ya)</h3>
+                        <div class="amount" id="totalIngresos">0 Gs</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Gastos Operativos Fijos</h2>
+                    <div class="gastos-fijos">
+                        <div class="gasto-item">
+                            <span>Javier (Cajero)</span>
+                            <span>100,000 Gs</span>
+                        </div>
+                        <div class="gasto-item">
+                            <span>Germán Chompi (Parrillero)</span>
+                            <span>110,000 Gs</span>
+                        </div>
+                        <div class="gasto-item">
+                            <span>Carbón</span>
+                            <span>40,000 Gs</span>
+                        </div>
+                        <div class="gasto-item">
+                            <span>Gastos Varios</span>
+                            <span>35,000 Gs</span>
+                        </div>
+                        <div class="gasto-item">
+                            <span>TOTAL GASTOS FIJOS</span>
+                            <span>285,000 Gs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Gastos Informativos (Control)</h2>
+                    
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                        <h3 style="color: #856404; margin-bottom: 10px;">👨‍🍳 Producción de Adri (Solo Informativo)</h3>
+                        <p style="color: #856404; margin-bottom: 10px;">Calculado automáticamente: 250 Gs por cada palito nuevo de Carne, Cerdo y Alitas</p>
+                        <div style="background: white; padding: 15px; border-radius: 5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 1.1em;"><strong>Total palitos nuevos:</strong> <span id="totalPalitosDisplay">0</span></span>
+                                <span style="font-size: 1.3em; font-weight: bold; color: #ffc107;" id="produccionAdriDisplay">0 Gs</span>
+                            </div>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #856404;"><strong>⚠️ No afecta ganancia neta ni diferencia de caja</strong></p>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>🍽️ Cena de Javier (Gs)</label>
+                            <input type="number" id="cenaJavier" value="0" onchange="calculateTotals()" style="font-size: 1.1em; text-align: center;">
+                            <small style="color: #856404; display: block; margin-top: 5px;">💡 Se suma en el cálculo de diferencia (ya salió de caja)</small>
+                        </div>
+                        <div class="form-group">
+                            <label>🍽️ Cena de Chompi (Gs)</label>
+                            <input type="number" id="cenaChompi" value="0" onchange="calculateTotals()" style="font-size: 1.1em; text-align: center;">
+                            <small style="color: #856404; display: block; margin-top: 5px;">💡 Se suma en el cálculo de diferencia (ya salió de caja)</small>
+                        </div>
+                    </div>
+
+                    <div class="summary-box" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); margin-top: 20px;">
+                        <h3>Total Gastos Informativos</h3>
+                        <div class="amount" id="totalGastosProduccion">0 Gs</div>
+                        <p style="margin-top: 10px; opacity: 0.9; font-size: 0.9em;">
+                            Producción Adri + Cena Javier + Cena Chompi
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Gastos Adicionales del Día</h2>
+                    <div class="form-group">
+                        <label>Concepto</label>
+                        <input type="text" id="gastoConcepto" placeholder="Ej: Bomba de agua">
+                    </div>
+                    <div class="form-group">
+                        <label>Monto (Gs)</label>
+                        <input type="number" id="gastoMonto" placeholder="20000">
+                    </div>
+                    <button class="btn btn-primary" onclick="addGasto()">➕ Agregar Gasto</button>
+                    
+                    <div id="gastosAdicionales" style="margin-top: 20px;"></div>
+                </div>
+
+                <div class="card">
+                    <h2>Resumen Final del Día</h2>
+                    <div id="resumenFinal"></div>
+                    <button class="btn btn-success" onclick="saveCierre()" style="margin-top: 20px;">💾 Guardar Cierre del Día</button>
+                </div>
+            </div>
+
+            <!-- TAB REPORTES -->
+            <div id="reportes" class="tab-content">
+                <div class="card">
+                    <h2>Historial de Días</h2>
+                    <div id="historialList"></div>
+                </div>
+            </div>
+
+            <!-- TAB SYNC -->
+            <div id="sync" class="tab-content">
+                <div class="card">
+                    <h2>Sincronización entre Dispositivos</h2>
+                    
+                    <div class="alert alert-info">
+                        <strong>ℹ️ ¿Cómo funciona?</strong><br>
+                        Genera un código único para sincronizar tus datos entre todos tus dispositivos (celular, tablet, computadora). Los datos se guardan en la nube de forma segura.
+                    </div>
+
+                    
+                    <div class="card" id="jsonbinPanel" style="margin-top: 15px;">
+                        <h3 style="margin-top: 0;">☁️ Nube (JSONBin) – Bin ID</h3>
+                        
+                        <div class="alert alert-info" style="margin-top: 10px;">
+                            <strong>🔐 API Key (JSONBin)</strong><br>
+                            Pegalo una vez y se guarda solo en este dispositivo (LocalStorage).
+                        </div>
+
+                        <div class="form-group">
+                            <label>API Key (X-Master-Key)</label>
+                            <input id="jsonbinKeyInput" type="password" placeholder="Pegá acá tu API Key de JSONBin">
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 10px;">
+                            <button class="btn btn-success" onclick="saveJsonbinKey()">💾 Guardar API Key</button>
+                            <button class="btn btn-danger" onclick="clearJsonbinKey()">🧹 Borrar API Key</button>
+                        </div>
+
+                        <div class="alert alert-warning" style="margin-top: 10px;">
+                            <strong>Importante:</strong> Para que varios dispositivos se sincronicen, <u>todos deben usar el mismo Bin ID</u>.
+                        </div>
+
+                        <div class="grid-2" style="align-items: end;">
+                            <div class="form-group">
+                                <label>Bin ID actual</label>
+                                <input id="jsonbinIdDisplay" type="text" readonly style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                            </div>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button class="btn btn-primary" onclick="copyJsonbinId()">📋 Copiar</button>
+                                <button class="btn btn-secondary" onclick="refreshJsonbinUI()">🔄 Actualizar</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Usar otro Bin ID (pegar aquí)</label>
+                            <input id="jsonbinIdInput" type="text" placeholder="Pegá acá el Bin ID del otro dispositivo">
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn btn-success" onclick="useJsonbinIdFromInput()">✅ Usar este Bin</button>
+                            <button class="btn btn-danger" onclick="disconnectJsonbin()">🚪 Desconectar</button>
+                        </div>
+
+                        <div class="alert alert-info" style="margin-top: 15px;">
+                            Tip: después de cambiar el Bin ID, recargá la página. Si querés, tocá “Traer de la nube” para forzar.
+                        </div>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+                            <button class="btn btn-secondary" onclick="loadFromCloud()">⬇️ Traer de la nube</button>
+                            <button class="btn btn-secondary" onclick="syncToCloud(true)">⬆️ Subir ahora</button>
+                            <button class="btn btn-secondary" onclick="exportBackupNow()">🛡️ Exportar backup</button>
+                            <label class="btn btn-secondary" style="cursor:pointer; margin:0;">
+                                ♻️ Importar backup
+                                <input id="backupImportFile" type="file" accept="application/json" style="display:none;">
+                            </label>
+                        </div>
+                    </div>
+
+
+<div class="sync-controls">
+                        <h3 style="color: #667eea; margin-bottom: 15px;">Configurar Sincronización</h3>
+                        
+                        <div id="syncSetupArea">
+                            <button class="btn btn-primary" onclick="generateSyncCode()" style="width: 100%; margin-bottom: 15px;">
+                                🔑 Generar Código de Sincronización
+                            </button>
+                            
+                            <div style="text-align: center; margin: 20px 0;">
+                                <strong>- O -</strong>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>¿Ya tienes un código? Ingrésalo aquí:</label>
+                                <input type="text" id="syncCodeInput" placeholder="Ingresa tu código de 6 dígitos" maxlength="6" style="text-align: center; font-size: 1.5em; letter-spacing: 5px;">
+                            </div>
+                            <button class="btn btn-success" onclick="connectWithCode()" style="width: 100%;">
+                                🔗 Conectar con este Código
+                            </button>
+                        </div>
+
+                        <div id="syncActiveArea" style="display: none;">
+                            <div class="alert alert-success">
+                                ✅ Sincronización Activa
+                            </div>
+                            
+                            <div class="sync-code" id="displaySyncCode"></div>
+                            
+                            <p style="text-align: center; color: #6c757d; margin: 15px 0;">
+                                Usa este código en tus otros dispositivos para sincronizar
+                            </p>
+
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button class="btn btn-info" onclick="manualSync()">🔄 Sincronizar Ahora</button>
+                                <button class="btn btn-warning" onclick="downloadBackup()">💾 Descargar Respaldo</button>
+                                <button class="btn btn-danger" onclick="disconnectSync()">🔌 Desconectar</button>
+                            </div>
+
+                            <div id="syncLog" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                                <strong>Registro de Sincronización:</strong>
+                                <div id="syncLogContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Importar/Exportar Datos</h2>
+                    
+                    <div class="grid-2">
+                        <div>
+                            <h3 style="color: #667eea;">Exportar Datos</h3>
+                            <p style="color: #6c757d; margin: 10px 0;">Descarga todos tus datos como respaldo</p>
+                            <button class="btn btn-primary" onclick="exportData()" style="width: 100%;">📥 Descargar Datos</button>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: #667eea;">Importar Datos</h3>
+                            <p style="color: #6c757d; margin: 10px 0;">Restaura datos desde un archivo de respaldo</p>
+                            <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
+                            <button class="btn btn-success" onclick="importData()" style="width: 100%;">📤 Importar Datos</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar producto -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeEditModal()">&times;</span>
+                <h2>✏️ Editar Producto</h2>
+            </div>
+            
+            <div class="form-group">
+                <label>Nombre del Producto</label>
+                <input type="text" id="editProductName">
+            </div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Precio de Venta (Gs)</label>
+                    <input type="number" id="editProductPrice">
+                </div>
+                <div class="form-group">
+                    <label>Costo por Unidad (Gs)</label>
+                    <input type="number" id="editProductCost">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Margen de Ganancia</label>
+                <input type="text" id="editProductMargin" readonly style="background: #f8f9fa; font-weight: bold; color: #28a745;">
+            </div>
+            
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="saveProductEdit()">💾 Guardar Cambios</button>
+                <button class="btn" onclick="closeEditModal()" style="background: #6c757d; color: white;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos
+        const DB = {
+            products: [],
+            inventory: {},
+            dailyRecords: [],
+            gastos: {},
+            syncCode: null,
+            lastSync: null,
+            lastModified: 0,
+            lastCloudModified: 0
+        };
+
+        // ===== JSONBIN SYNC =====
+        let JSONBIN_API_KEY = localStorage.getItem('jsonbinKey') || '';
+        let jsonbinId = localStorage.getItem('jsonbinId') || null;
+        
+        async function initCloud() {
+            if (!JSONBIN_API_KEY) { console.warn('⚠️ Falta API Key (JSONBin). Cargala en ☁️ Sincronizar.'); return; }
+
+            console.log("🔵 Iniciando JSONBin...");
+            if (!jsonbinId) {
+                console.log("🔵 No hay Bin ID, creando nuevo...");
+                try {
+                    const res = await fetch('https://api.jsonbin.io/v3/b', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY},
+                        body: JSON.stringify(DB)
+                    });
+                    
+                    if (!res.ok) {
+                        console.error("❌ Error creando Bin:", res.status, res.statusText);
+                        const errorText = await res.text();
+                        console.error("❌ Respuesta:", errorText);
+                        return;
+                    }
+                    
+                    const data = await res.json();
+                    jsonbinId = data.metadata.id;
+                    localStorage.setItem('jsonbinId', jsonbinId);
+                    console.log("✅ Bin creado:", jsonbinId);
+                    refreshJsonbinUI();
+                } catch(e) {
+                    console.error("❌ Error en initCloud:", e);
+                }
+            } else {
+                console.log("✅ Bin ID existente:", jsonbinId);
+                refreshJsonbinUI();
+            }
+        }
+        
+        
+        
+        // ====== JSONBin UI helpers ======
+        function refreshJsonbinUI() {
+            const el = document.getElementById('jsonbinIdDisplay');
+            if (el) el.value = jsonbinId || '';
+            refreshJsonbinKeyUI();
+        }
+
+        
+
+        function refreshJsonbinKeyUI(){
+            const inp = document.getElementById('jsonbinKeyInput');
+            if (!inp) return;
+            inp.value = JSONBIN_API_KEY ? '********' : '';
+        }
+        function saveJsonbinKey(){
+            const inp = document.getElementById('jsonbinKeyInput');
+            const val = (inp?.value || '').trim();
+            if (!val || val === '********'){
+                alert('Pegá tu API Key real (X-Master-Key).');
+                return;
+            }
+            JSONBIN_API_KEY = val;
+            localStorage.setItem('jsonbinKey', JSONBIN_API_KEY);
+            if (inp) inp.value = '********';
+            alert('✅ API Key guardada en este dispositivo.');
+        }
+        function clearJsonbinKey(){
+            if(!confirm('¿Borrar API Key guardada en este dispositivo?')) return;
+            JSONBIN_API_KEY = '';
+            localStorage.removeItem('jsonbinKey');
+            refreshJsonbinKeyUI();
+            alert('✅ API Key borrada.');
+        }
+
+function copyJsonbinId() {
+            if (!jsonbinId) {
+                alert('No hay Bin ID todavía.');
+                return;
+            }
+            navigator.clipboard?.writeText(jsonbinId)
+                .then(() => alert('✅ Bin ID copiado: ' + jsonbinId))
+                .catch(() => {
+                    // Fallback
+                    const tmp = document.createElement('textarea');
+                    tmp.value = jsonbinId;
+                    document.body.appendChild(tmp);
+                    tmp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tmp);
+                    alert('✅ Bin ID copiado: ' + jsonbinId);
+                });
+        }
+
+        function useJsonbinIdFromInput() {
+            const inp = document.getElementById('jsonbinIdInput');
+            const val = (inp?.value || '').trim();
+            if (!val) {
+                alert('Pegá un Bin ID válido.');
+                return;
+            }
+            jsonbinId = val;
+            localStorage.setItem('jsonbinId', jsonbinId);
+            refreshJsonbinUI();
+            alert('✅ Listo. Ahora este dispositivo usa el Bin ID: ' + jsonbinId + '\n\nRecomendado: recargar la página.');
+        }
+
+        function disconnectJsonbin() {
+            if (!confirm('¿Desconectar JSONBin en este dispositivo? (Se borra el Bin ID guardado localmente)')) return;
+            jsonbinId = null;
+            localStorage.removeItem('jsonbinId');
+            refreshJsonbinUI();
+            alert('✅ Desconectado. Recargá la página si querés crear un Bin nuevo.');
+        }
+
+        function openCloudPanel() {
+            try {
+                switchTab('sync');
+                setTimeout(() => {
+                    const panel = document.getElementById('jsonbinPanel');
+                    if (panel) panel.scrollIntoView({behavior: 'smooth', block: 'start'});
+                }, 60);
+            } catch(e) {
+                console.warn('No se pudo abrir el panel de sincronización:', e);
+            }
+        }
+
+// ====== Sync control ======
+        let __cloudSyncTimer = null;
+        let __lastLocalEditAt = 0;
+
+        function scheduleCloudSync(reason = 'unknown') {
+            __lastLocalEditAt = Date.now();
+            if (__cloudSyncTimer) clearTimeout(__cloudSyncTimer);
+            console.log('🟡 Sync programado (1.5s):', reason);
+            __cloudSyncTimer = setTimeout(() => {
+                __cloudSyncTimer = null;
+                syncToCloud(false, reason);
+            }, 1500);
+        }
+
+        function pullIsLocked() {
+            // Evita que el pull pise cambios locales recientes
+            return (Date.now() - __lastLocalEditAt) < 8000;
+        }
+
+async function syncToCloud(force = false, reason = 'unknown') {
+            if (!JSONBIN_API_KEY) { console.warn('⚠️ Falta API Key (JSONBin).'); return; }
+
+            if (!jsonbinId) {
+                console.log("⚠️ No hay Bin ID, no se puede sincronizar");
+                return;
+            }
+            try {
+                // Si no hay cambios locales, no hagas PUT
+                if (!force && DB.lastCloudModified && DB.lastModified && DB.lastModified <= DB.lastCloudModified) {
+                    // Nada nuevo que subir
+                    return;
+                }
+
+                console.log("🔄 Sincronizando a la nube...", { reason, lastModified: DB.lastModified });
+
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
+                    body: JSON.stringify(DB)
+                });
+
+                if (res.ok) {
+                    DB.lastCloudModified = DB.lastModified || Date.now();
+                    localStorage.setItem('asaditosDB', JSON.stringify(DB));
+                    console.log("✅ Sincronizado exitosamente");
+                } else {
+                    console.error("❌ Error sincronizando:", res.status);
+                }
+            } catch (e) {
+                console.error("❌ Error en syncToCloud:", e);
+            }
+        }
+        
+        async function loadFromCloud() {
+            if (!jsonbinId) return;
+            if (!JSONBIN_API_KEY) { console.warn('⚠️ Falta API Key (JSONBin).'); return; }
+if (pullIsLocked()) {
+                console.log("⏳ Pull pausado: cambios locales recientes.");
+                return;
+            }
+
+            try {
+                console.log("📥 Cargando desde la nube...");
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+
+                if (!res.ok) {
+                    console.error("❌ Error cargando:", res.status);
+                    return;
+                }
+
+                const data = await res.json();
+                const cloud = (data && data.record) ? data.record : {};
+                const cloudModified = cloud.lastModified || 0;
+                const localModified = DB.lastModified || 0;
+
+                // Seguridad: si la nube viene vacía, NO pises datos locales
+                if (!hasAnyData(cloud) && hasAnyData(DB)) {
+                    console.warn('🛡️ Nube vacía detectada: se mantiene local para evitar pérdida.');
+                    return;
+                }
+
+                // Si la nube no es más nueva, no pises local
+                if (cloudModified && localModified && cloudModified <= localModified) {
+                    DB.lastCloudModified = Math.max(DB.lastCloudModified || 0, cloudModified);
+                    // Guardamos el marcador, por si hubo cambios previos
+                    localStorage.setItem('asaditosDB', JSON.stringify(DB));
+                    console.log("ℹ️ Nube no más nueva que local; se mantiene local.");
+                    return;
+                }
+
+                Object.assign(DB, cloud);
+                DB.lastCloudModified = cloudModified || Date.now();
+                localStorage.setItem('asaditosDB', JSON.stringify(DB));
+
+                renderProducts();
+                renderInventory();
+                calculateTotals();
+                renderHistorial();
+
+                console.log("✅ Datos cargados desde la nube");
+            } catch (e) {
+                console.error("❌ Error en loadFromCloud:", e);
+            }
+        }
+
+        let currentEditingProductId = null;
+        let currentInventoryDate = null;
+        let currentCierreDate = null;
+
+        // Denominaciones
+        const billetes = [100000, 50000, 20000, 10000, 5000, 2000];
+        const monedas = [1000, 500, 100, 50];
+
+        // Inicializar
+        function init() {
+            loadData();
+            initCloud();
+            wireBackupImportInput();
+            updateDate();
+            
+            // Inicializar fechas
+            currentInventoryDate = getTodayKey();
+            currentCierreDate = getTodayKey();
+            
+            renderProducts();
+            setInventoryDateInput();
+            setCierreDateInput();
+            renderInventory();
+            renderBilletes();
+            renderMonedas();
+            calculateTotals();
+            renderHistorial();
+            checkSyncStatus();
+            
+            if (DB.products.length === 0) {
+                loadInitialProducts();
+            }
+
+            // Auto-sincronizar cada 10 segundos
+            setInterval(() => {
+                if (jsonbinId) {
+                    loadFromCloud();
+                }
+            }, 10000);
+        }
+
+        function updateDate() {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('es-PY', options);
+        }
+
+        function loadInitialProducts() {
+            const initialProducts = [
+                { name: 'ASADITO CARNE', price: 5000, cost: 3500 },
+                { name: 'ASADITO POLLO', price: 5000, cost: 5000 },
+                { name: 'ASADITO CERDO', price: 5000, cost: 3000 },
+                { name: 'CHORIQUESO', price: 6000, cost: 3500 },
+                { name: 'PICANTE BESITO', price: 5000, cost: 2200 },
+                { name: 'ALITA DE POLLO', price: 5000, cost: 3000 },
+                { name: 'PARRILLERO', price: 5000, cost: 3500 },
+                { name: 'BUTIFARRA', price: 5000, cost: 2500 },
+                { name: 'MORCILLA OSCHI', price: 5000, cost: 2800 },
+                { name: 'CHINCHULIN', price: 5000, cost: 2300 },
+                { name: 'COCA 250ml', price: 4000, cost: 3500 },
+                { name: 'COCA 1L DES', price: 10000, cost: 0 },
+                { name: 'COCA 2L RET', price: 12000, cost: 0 },
+                { name: 'MUSLO DE POLLO', price: 15000, cost: 8800 },
+                { name: 'COCA 1L RET', price: 8000, cost: 0 },
+                { name: 'COCA ZERO 500', price: 8000, cost: 0 },
+                { name: 'FANTA NARANJA 500', price: 8000, cost: 0 },
+                { name: 'OURO LITRO', price: 10000, cost: 0 },
+                { name: 'Pulp 250', price: 4000, cost: 0 },
+                { name: 'COCA 2L DES', price: 18000, cost: 0 },
+                { name: 'MISIONERO', price: 6000, cost: 0 },
+                { name: 'COCA 1.5 DES', price: 16000, cost: 0 },
+                { name: 'AGUA 500ML', price: 5000, cost: 0 },
+                { name: 'HIELO 1 KILO', price: 1000, cost: 0 },
+                { name: 'COCA 1.5 RET', price: 10000, cost: 0 }
+            ];
+
+            DB.products = initialProducts.map((p, i) => ({
+                id: Date.now() + i,
+                ...p,
+                margin: p.price - p.cost
+            }));
+            
+            saveData();
+            renderProducts();
+        }
+
+        function setInventoryDateInput() {
+            document.getElementById('inventoryDate').value = currentInventoryDate;
+            updateInventoryDateDisplay();
+        }
+
+        function setCierreDateInput() {
+            document.getElementById('cierreDate').value = currentCierreDate;
+            updateCierreDateDisplay();
+        }
+
+        function updateInventoryDateDisplay() {
+            const date = new Date(currentInventoryDate + 'T12:00:00');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('selectedDateDisplay').textContent = 
+                '📊 Inventario de: ' + date.toLocaleDateString('es-PY', options);
+        }
+
+        // NUEVA FUNCIÓN: Buscar el último día con sobrantes registrados
+        function getLastDayWithLeftovers(beforeDate) {
+            const allDates = Object.keys(DB.inventory).sort().reverse();
+            
+            for (let date of allDates) {
+                if (date < beforeDate) {
+                    // Verificar si este día tiene al menos un producto con sobrante
+                    const hasLeftovers = DB.products.some(p => {
+                        const inv = DB.inventory[date][p.id];
+                        return inv && inv.leftover > 0;
+                    });
+                    
+                    if (hasLeftovers) {
+                        return date;
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        // NUEVA FUNCIÓN: Cargar sobrantes del último día trabajado
+        function loadLeftoversFromLastWorkingDay(selectedDate) {
+            const lastDayWithLeftovers = getLastDayWithLeftovers(selectedDate);
+            
+            if (lastDayWithLeftovers) {
+                DB.products.forEach(p => {
+                    const lastDayInv = DB.inventory[lastDayWithLeftovers][p.id];
+                    const leftoverFromLastDay = (lastDayInv && lastDayInv.leftover) ? lastDayInv.leftover : 0;
+                    
+                    // Inicializar el día actual si no existe
+                    if (!DB.inventory[selectedDate]) {
+                        DB.inventory[selectedDate] = {};
+                    }
+                    if (!DB.inventory[selectedDate][p.id]) {
+                        DB.inventory[selectedDate][p.id] = { produced: 0, leftover: 0, leftoverYesterday: 0 };
+                    }
+                    
+                    // Cargar el sobrante del último día trabajado
+                    DB.inventory[selectedDate][p.id].leftoverYesterday = leftoverFromLastDay;
+                });
+                
+                return lastDayWithLeftovers;
+            }
+            
+            return null;
+        }
+
+        function updateCierreDateDisplay() {
+            const date = new Date(currentCierreDate + 'T12:00:00');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('selectedCierreDateDisplay').textContent = 
+                '💰 Cierre de: ' + date.toLocaleDateString('es-PY', options);
+        }
+
+        function changeInventoryDate() {
+            currentInventoryDate = document.getElementById('inventoryDate').value;
+            updateInventoryDateDisplay();
+            renderInventory();
+        }
+
+        function changeCierreDate() {
+            currentCierreDate = document.getElementById('cierreDate').value;
+            updateCierreDateDisplay();
+            loadCierreData();
+            calculateTotals();
+        }
+
+        function setToday() {
+            currentInventoryDate = getTodayKey();
+            setInventoryDateInput();
+            renderInventory();
+        }
+
+        function setCierreToday() {
+            currentCierreDate = getTodayKey();
+            setCierreDateInput();
+            loadCierreData();
+            calculateTotals();
+        }
+
+        function goToPreviousDay() {
+            const date = new Date(currentInventoryDate + 'T12:00:00');
+            date.setDate(date.getDate() - 1);
+            currentInventoryDate = formatDateKey(date);
+            setInventoryDateInput();
+            renderInventory();
+        }
+
+        function goToNextDay() {
+            const date = new Date(currentInventoryDate + 'T12:00:00');
+            date.setDate(date.getDate() + 1);
+            currentInventoryDate = formatDateKey(date);
+            setInventoryDateInput();
+            renderInventory();
+        }
+
+        function goToPreviousDayCierre() {
+            const date = new Date(currentCierreDate + 'T12:00:00');
+            date.setDate(date.getDate() - 1);
+            currentCierreDate = formatDateKey(date);
+            setCierreDateInput();
+            loadCierreData();
+            calculateTotals();
+        }
+
+        function goToNextDayCierre() {
+            const date = new Date(currentCierreDate + 'T12:00:00');
+            date.setDate(date.getDate() + 1);
+            currentCierreDate = formatDateKey(date);
+            setCierreDateInput();
+            loadCierreData();
+            calculateTotals();
+        }
+
+        function switchTab(tabName, btnEl) {
+            // Tabs UI
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+            const content = document.getElementById(tabName);
+            if (content) content.classList.add('active');
+            if (btnEl) btnEl.classList.add('active');
+
+            // Render / recalcular según pestaña
+            if (tabName === 'inventario') {
+                renderInventory();
+            } else if (tabName === 'cierre') {
+                calculateTotals();
+            } else if (tabName === 'reportes') {
+                renderHistorial();
+            } else if (tabName === 'sync') {
+                checkSyncStatus();
+                refreshJsonbinUI();
+            }
+        }
+
+        function addProduct() {
+            const name = document.getElementById('newProductName').value.trim().toUpperCase();
+            const price = parseInt(document.getElementById('newProductPrice').value);
+            const cost = parseInt(document.getElementById('newProductCost').value);
+
+            if (!name || !price || price < 0 || cost < 0) {
+                alert('Por favor completa todos los campos correctamente');
+                return;
+            }
+
+            const product = {
+                id: Date.now(),
+                name,
+                price,
+                cost,
+                margin: price - cost
+            };
+
+            DB.products.push(product);
+            saveData();
+            
+            renderProducts();
+
+            document.getElementById('newProductName').value = '';
+            document.getElementById('newProductPrice').value = '';
+            document.getElementById('newProductCost').value = '';
+            
+            alert('✅ Producto agregado correctamente');
+        }
+
+        function openEditModal(id) {
+            const product = DB.products.find(p => p.id === id);
+            if (!product) return;
+
+            currentEditingProductId = id;
+            document.getElementById('editProductName').value = product.name;
+            document.getElementById('editProductPrice').value = product.price;
+            document.getElementById('editProductCost').value = product.cost;
+            updateMarginDisplay();
+
+            document.getElementById('editModal').style.display = 'block';
+
+            // Actualizar margen cuando cambien los valores
+            document.getElementById('editProductPrice').addEventListener('input', updateMarginDisplay);
+            document.getElementById('editProductCost').addEventListener('input', updateMarginDisplay);
+        }
+
+        function updateMarginDisplay() {
+            const price = parseInt(document.getElementById('editProductPrice').value) || 0;
+            const cost = parseInt(document.getElementById('editProductCost').value) || 0;
+            const margin = price - cost;
+            document.getElementById('editProductMargin').value = formatMoney(margin);
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditingProductId = null;
+        }
+
+        function saveProductEdit() {
+            if (!currentEditingProductId) return;
+
+            const name = document.getElementById('editProductName').value.trim().toUpperCase();
+            const price = parseInt(document.getElementById('editProductPrice').value);
+            const cost = parseInt(document.getElementById('editProductCost').value);
+
+            if (!name || !price || price < 0 || cost < 0) {
+                alert('Por favor completa todos los campos correctamente');
+                return;
+            }
+
+            const productIndex = DB.products.findIndex(p => p.id === currentEditingProductId);
+            if (productIndex !== -1) {
+                DB.products[productIndex] = {
+                    ...DB.products[productIndex],
+                    name,
+                    price,
+                    cost,
+                    margin: price - cost
+                };
+
+                saveData();
+                
+                renderProducts();
+                closeEditModal();
+                alert('✅ Producto actualizado correctamente');
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm('¿Estás seguro de eliminar este producto?')) {
+                DB.products = DB.products.filter(p => p.id !== id);
+                saveData();
+                
+                renderProducts();
+                alert('✅ Producto eliminado');
+            }
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('productsList');
+            if (DB.products.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d;">No hay productos. Agrega el primero.</p>';
+                return;
+            }
+
+            container.innerHTML = DB.products.map(p => `
+                <div class="product-item">
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">
+                            Precio: ${formatMoney(p.price)} | Costo: ${formatMoney(p.cost)} | 
+                            <strong style="color: #28a745;">Ganancia: ${formatMoney(p.margin)}</strong>
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn btn-warning" onclick="openEditModal(${p.id})">✏️ Editar</button>
+                        <button class="btn btn-danger" onclick="deleteProduct(${p.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderInventory() {
+            const container = document.getElementById('inventarioList');
+            const selectedDate = currentInventoryDate;
+            
+            if (!DB.inventory[selectedDate]) {
+                DB.inventory[selectedDate] = {};
+            }
+
+            if (DB.products.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d;">Primero agrega productos en la pestaña "Productos"</p>';
+                return;
+            }
+
+            // NUEVO: Cargar sobrantes del último día trabajado si el día actual está vacío
+            let lastWorkingDay = null;
+            const hasAnyData = DB.products.some(p => {
+                const inv = DB.inventory[selectedDate][p.id];
+                return inv && (inv.produced > 0 || inv.leftover > 0 || inv.leftoverYesterday > 0);
+            });
+            
+            if (!hasAnyData) {
+                lastWorkingDay = loadLeftoversFromLastWorkingDay(selectedDate);
+            }
+
+            // Mostrar mensaje informativo si se cargaron sobrantes de días anteriores
+            let infoMessage = '';
+            if (lastWorkingDay) {
+                const lastDate = new Date(lastWorkingDay + 'T12:00:00');
+                const dateStr = lastDate.toLocaleDateString('es-PY');
+                infoMessage = `
+                    <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 12px; margin-bottom: 15px; color: #856404;">
+                        <strong>ℹ️ Información:</strong> Se cargaron los sobrantes del último día trabajado (${dateStr})
+                    </div>
+                `;
+            }
+
+            container.innerHTML = infoMessage + `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Sobrante Ayer</th>
+                            <th>Producido Hoy</th>
+                            <th>Total Disponible</th>
+                            <th>Sobrante Hoy</th>
+                            <th>Vendido</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${DB.products.map(p => {
+                            const inv = DB.inventory[selectedDate][p.id] || { produced: 0, leftover: 0 };
+                            const leftoverYesterday = inv.leftoverYesterday || 0;
+                            const produced = inv.produced || 0;
+                            const totalAvailable = leftoverYesterday + produced;
+                            const leftoverToday = inv.leftover || 0;
+                            const sold = totalAvailable - leftoverToday;
+                            return `
+                                <tr>
+                                    <td data-label="Producto"><strong>${p.name}</strong></td>
+                                    <td data-label="Sobrante Ayer">${leftoverYesterday}</td>
+                                    <td data-label="Producido Hoy">
+                                        <input type="number" 
+                                            value="${produced}" 
+                                            onchange="updateInventory(${p.id}, 'produced', this.value)"
+                                            style="width: 80px; text-align: center;">
+                                    </td>
+                                    <td data-label="Total Disponible"><strong style="color: #667eea;">${totalAvailable}</strong></td>
+                                    <td data-label="Sobrante Hoy">
+                                        <input type="number" 
+                                            value="${leftoverToday}" 
+                                            onchange="updateInventory(${p.id}, 'leftover', this.value)"
+                                            style="width: 80px; text-align: center;">
+                                    </td>
+                                    <td data-label="Vendido"><strong style="color: #28a745;">${sold >= 0 ? sold : 0}</strong></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            updateVentasResumen();
+        }
+
+        function updateInventory(productId, field, value) {
+            const selectedDate = currentInventoryDate;
+            if (!DB.inventory[selectedDate][productId]) {
+                DB.inventory[selectedDate][productId] = { produced: 0, leftover: 0, leftoverYesterday: 0 };
+            }
+            
+            DB.inventory[selectedDate][productId][field] = parseInt(value) || 0;
+            
+            // Calcular vendido automáticamente
+            const inv = DB.inventory[selectedDate][productId];
+            const leftoverYesterday = inv.leftoverYesterday || 0;
+            const produced = inv.produced || 0;
+            const leftoverToday = inv.leftover || 0;
+            const totalAvailable = leftoverYesterday + produced;
+            inv.sold = totalAvailable - leftoverToday;
+            
+            saveData();
+            renderInventory();
+        }
+
+        function updateVentasResumen() {
+            const container = document.getElementById('ventasResumen');
+            const selectedDate = currentInventoryDate;
+            
+            let totalVentas = 0;
+            let totalCosto = 0;
+            let totalGanancia = 0;
+
+            const ventasDetalle = DB.products.map(p => {
+                const inv = DB.inventory[selectedDate][p.id] || { sold: 0 };
+                const vendido = inv.sold || 0;
+                const subtotal = vendido * p.price;
+                const costo = vendido * p.cost;
+                const ganancia = vendido * p.margin;
+
+                totalVentas += subtotal;
+                totalCosto += costo;
+                totalGanancia += ganancia;
+
+                return { name: p.name, vendido, subtotal, ganancia };
+            }).filter(v => v.vendido > 0);
+
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Ventas</div>
+                        <div class="stat-value">${formatMoney(totalVentas)}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Costo Total</div>
+                        <div class="stat-value">${formatMoney(totalCosto)}</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: #28a745;">
+                        <div class="stat-label">Ganancia Bruta</div>
+                        <div class="stat-value" style="color: #28a745;">${formatMoney(totalGanancia)}</div>
+                    </div>
+                </div>
+
+                ${ventasDetalle.length > 0 ? `
+                    <h3 style="margin-top: 20px; color: #667eea;">Detalle de Ventas</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Vendido</th>
+                                <th>Subtotal</th>
+                                <th>Ganancia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${ventasDetalle.map(v => `
+                                <tr>
+                                    <td>${v.name}</td>
+                                    <td>${v.vendido}</td>
+                                    <td>${formatMoney(v.subtotal)}</td>
+                                    <td style="color: #28a745; font-weight: bold;">${formatMoney(v.ganancia)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                ` : ''}
+            `;
+        }
+
+        function saveInventory() {
+            const selectedDate = currentInventoryDate;
+            const selectedDateObj = new Date(selectedDate + 'T12:00:00');
+            const tomorrow = new Date(selectedDateObj);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowKey = formatDateKey(tomorrow);
+            
+            if (!DB.inventory[tomorrowKey]) {
+                DB.inventory[tomorrowKey] = {};
+            }
+
+            DB.products.forEach(p => {
+                const inv = DB.inventory[selectedDate][p.id] || { leftover: 0 };
+                const leftoverToday = inv.leftover || 0;
+                
+                if (!DB.inventory[tomorrowKey][p.id]) {
+                    DB.inventory[tomorrowKey][p.id] = { produced: 0, leftover: 0, leftoverYesterday: 0 };
+                }
+                DB.inventory[tomorrowKey][p.id].leftoverYesterday = leftoverToday;
+            });
+
+            saveData();
+            
+            
+            const dateDisplay = new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-PY');
+            alert(`✅ Inventario del ${dateDisplay} guardado correctamente.\n\nEl sobrante pasará automáticamente al día siguiente.`);
+        }
+
+        function loadCierreData() {
+            const selectedDate = currentCierreDate;
+            
+            // Cargar datos del arqueo si existen
+            const savedRecord = DB.dailyRecords.find(r => r.date === selectedDate);
+            if (savedRecord && savedRecord.arqueoCaja) {
+                // Cargar billetes y monedas
+                billetes.forEach(valor => {
+                    const input = document.getElementById(`billete-${valor}`);
+                    if (input) {
+                        input.value = savedRecord.arqueoCaja[`billete-${valor}`] || 0;
+                    }
+                });
+                monedas.forEach(valor => {
+                    const input = document.getElementById(`moneda-${valor}`);
+                    if (input) {
+                        input.value = savedRecord.arqueoCaja[`moneda-${valor}`] || 0;
+                    }
+                });
+                
+                // Cargar tarjetas y pedidos ya
+                document.getElementById('tarjetas').value = savedRecord.tarjetas || 0;
+                document.getElementById('pedidosYa').value = savedRecord.pedidosYa || 0;
+                
+                // Cargar cenas
+                document.getElementById('cenaJavier').value = savedRecord.cenaJavier || 0;
+                document.getElementById('cenaChompi').value = savedRecord.cenaChompi || 0;
+                
+                // Cargar fondo de caja
+                document.getElementById('fondoCaja').value = savedRecord.fondoCaja || 300000;
+            } else {
+                // Limpiar campos si no hay datos guardados
+                billetes.forEach(valor => {
+                    const input = document.getElementById(`billete-${valor}`);
+                    if (input) input.value = 0;
+                });
+                monedas.forEach(valor => {
+                    const input = document.getElementById(`moneda-${valor}`);
+                    if (input) input.value = 0;
+                });
+                document.getElementById('tarjetas').value = 0;
+                document.getElementById('pedidosYa').value = 0;
+                document.getElementById('cenaJavier').value = 0;
+                document.getElementById('cenaChompi').value = 0;
+                document.getElementById('fondoCaja').value = 300000;
+            }
+            
+            renderGastos();
+        }
+
+        function renderBilletes() {
+            const container = document.getElementById('billetes');
+            container.innerHTML = billetes.map(valor => `
+                <div class="billete-item">
+                    <div class="billete-valor">${formatMoney(valor)}</div>
+                    <input type="number" 
+                        class="billete-input" 
+                        id="billete-${valor}"
+                        value="0" 
+                        min="0"
+                        onchange="calculateTotals()">
+                    <div class="billete-total" id="total-billete-${valor}">0 Gs</div>
+                </div>
+            `).join('');
+        }
+
+        function renderMonedas() {
+            const container = document.getElementById('monedas');
+            container.innerHTML = monedas.map(valor => `
+                <div class="billete-item">
+                    <div class="billete-valor">${formatMoney(valor)}</div>
+                    <input type="number" 
+                        class="billete-input" 
+                        id="moneda-${valor}"
+                        value="0" 
+                        min="0"
+                        onchange="calculateTotals()">
+                    <div class="billete-total" id="total-moneda-${valor}">0 Gs</div>
+                </div>
+            `).join('');
+        }
+
+        function calculateTotals() {
+            let totalCaja = 0;
+
+            billetes.forEach(valor => {
+                const cantidad = parseInt(document.getElementById(`billete-${valor}`).value) || 0;
+                const subtotal = cantidad * valor;
+                document.getElementById(`total-billete-${valor}`).textContent = formatMoney(subtotal);
+                totalCaja += subtotal;
+            });
+
+            monedas.forEach(valor => {
+                const cantidad = parseInt(document.getElementById(`moneda-${valor}`).value) || 0;
+                const subtotal = cantidad * valor;
+                document.getElementById(`total-moneda-${valor}`).textContent = formatMoney(subtotal);
+                totalCaja += subtotal;
+            });
+
+            document.getElementById('totalCaja').textContent = formatMoney(totalCaja);
+            
+            // Obtener tarjetas y pedidos ya
+            const tarjetas = parseInt(document.getElementById('tarjetas').value) || 0;
+            const pedidosYa = parseInt(document.getElementById('pedidosYa').value) || 0;
+            const totalIngresos = totalCaja + tarjetas + pedidosYa;
+            
+            document.getElementById('totalIngresos').textContent = formatMoney(totalIngresos);
+            
+            updateResumenFinal(totalCaja, tarjetas, pedidosYa);
+        }
+
+        function addGasto() {
+            const concepto = document.getElementById('gastoConcepto').value.trim();
+            const monto = parseInt(document.getElementById('gastoMonto').value);
+
+            if (!concepto || !monto || monto <= 0) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            const selectedDate = currentCierreDate;
+            if (!DB.gastos[selectedDate]) {
+                DB.gastos[selectedDate] = [];
+            }
+
+            DB.gastos[selectedDate].push({
+                id: Date.now(),
+                concepto,
+                monto
+            });
+
+            saveData();
+            renderGastos();
+            calculateTotals();
+
+            document.getElementById('gastoConcepto').value = '';
+            document.getElementById('gastoMonto').value = '';
+        }
+
+        function renderGastos() {
+            const selectedDate = currentCierreDate;
+            const gastos = DB.gastos[selectedDate] || [];
+            const container = document.getElementById('gastosAdicionales');
+
+            if (gastos.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; text-align: center;">No hay gastos adicionales</p>';
+                return;
+            }
+
+            const total = gastos.reduce((sum, g) => sum + g.monto, 0);
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Monto</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${gastos.map(g => `
+                            <tr>
+                                <td>${g.concepto}</td>
+                                <td>${formatMoney(g.monto)}</td>
+                                <td>
+                                    <button class="btn btn-danger" onclick="deleteGasto(${g.id})">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                        <tr style="font-weight: bold; background: #f8f9fa;">
+                            <td>TOTAL</td>
+                            <td colspan="2">${formatMoney(total)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function deleteGasto(id) {
+            const selectedDate = currentCierreDate;
+            DB.gastos[selectedDate] = DB.gastos[selectedDate].filter(g => g.id !== id);
+            saveData();
+            renderGastos();
+            calculateTotals();
+        }
+
+        function updateResumenFinal(totalCaja, tarjetas, pedidosYa) {
+            const selectedDate = currentCierreDate;
+            const container = document.getElementById('resumenFinal');
+            
+            // Calcular producción de Adri (250 Gs por palito de carne, cerdo y alitas) - SOLO INFORMATIVO
+            let totalPalitosAdri = 0;
+            const productosAdri = ['ASADITO CARNE', 'ASADITO CERDO', 'ALITA DE POLLO'];
+            
+            DB.products.forEach(p => {
+                if (productosAdri.includes(p.name)) {
+                    const inv = DB.inventory[selectedDate][p.id] || { produced: 0 };
+                    totalPalitosAdri += (inv.produced || 0);
+                }
+            });
+            
+            const produccionAdri = totalPalitosAdri * 250;
+            
+            // Actualizar display de producción de Adri
+            document.getElementById('totalPalitosDisplay').textContent = totalPalitosAdri;
+            document.getElementById('produccionAdriDisplay').textContent = formatMoney(produccionAdri);
+            
+            // Obtener cenas (AFECTAN DIFERENCIA DE CAJA, NO GANANCIA)
+            const cenaJavier = parseInt(document.getElementById('cenaJavier').value) || 0;
+            const cenaChompi = parseInt(document.getElementById('cenaChompi').value) || 0;
+            const totalCenas = cenaJavier + cenaChompi;
+            
+            // Total gastos informativos (cenas + Adri)
+            const gastosInformativos = totalCenas + produccionAdri;
+            document.getElementById('totalGastosProduccion').textContent = formatMoney(gastosInformativos);
+            
+            // Calcular ganancia bruta de ventas
+            let gananciaVentas = 0;
+            DB.products.forEach(p => {
+                const inv = DB.inventory[selectedDate][p.id] || { sold: 0 };
+                gananciaVentas += (inv.sold || 0) * p.margin;
+            });
+
+            // Gastos que SÍ afectan la ganancia (solo gastos fijos + adicionales)
+            const gastosFijos = 285000;
+            const gastosAdicionales = (DB.gastos[selectedDate] || []).reduce((sum, g) => sum + g.monto, 0);
+            const totalGastos = gastosFijos + gastosAdicionales;
+            const gananciaNeta = gananciaVentas - totalGastos;
+
+            const ventasTotales = DB.products.reduce((sum, p) => {
+                const inv = DB.inventory[selectedDate][p.id] || { sold: 0 };
+                return sum + ((inv.sold || 0) * p.price);
+            }, 0);
+
+            // Total de ingresos (efectivo + tarjetas + pedidos ya)
+            const totalIngresos = totalCaja + tarjetas + pedidosYa;
+            
+            // Fondo de caja inicial (sencillo)
+            const fondoCaja = parseInt(document.getElementById('fondoCaja').value) || 300000;
+            
+            // Diferencia en caja - LAS CENAS SE SUMAN porque ya salieron de la caja
+            // Fórmula: (Total Ingresos + Cenas - Fondo Inicial) - Total Ventas
+            const efectivoReal = totalIngresos - fondoCaja;
+            const ingresosConCenas = efectivoReal + totalCenas; // SUMAMOS las cenas
+            const diferenciaCaja = ingresosConCenas - ventasTotales;
+
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-left-color: #28a745;">
+                        <div class="stat-label">Ganancia Bruta (Ventas)</div>
+                        <div class="stat-value" style="color: #28a745;">${formatMoney(gananciaVentas)}</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: #667eea;">
+                        <div class="stat-label">Gastos Fijos</div>
+                        <div class="stat-value" style="color: #667eea;">${formatMoney(gastosFijos)}</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: #fd7e14;">
+                        <div class="stat-label">Gastos Adicionales</div>
+                        <div class="stat-value" style="color: #fd7e14;">${formatMoney(gastosAdicionales)}</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: #dc3545;">
+                        <div class="stat-label">Total Gastos</div>
+                        <div class="stat-value" style="color: #dc3545;">${formatMoney(totalGastos)}</div>
+                    </div>
+                </div>
+
+                <div class="summary-box ${gananciaNeta >= 0 ? 'positive' : 'negative'}" style="margin: 20px 0;">
+                    <h3>GANANCIA NETA</h3>
+                    <div class="amount">${formatMoney(gananciaNeta)}</div>
+                    <p style="margin-top: 10px; opacity: 0.9;">
+                        ${gananciaNeta >= 0 ? '✅ Día rentable' : '⚠️ Día con pérdida'}
+                    </p>
+                </div>
+
+                <div class="gastos-fijos">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">Detalle Financiero</h3>
+                    <div class="gasto-item">
+                        <span>Efectivo en Caja (Total Contado)</span>
+                        <span>${formatMoney(totalCaja)}</span>
+                    </div>
+                    <div class="gasto-item">
+                        <span>Tarjetas</span>
+                        <span>${formatMoney(tarjetas)}</span>
+                    </div>
+                    <div class="gasto-item">
+                        <span>Pedidos Ya</span>
+                        <span>${formatMoney(pedidosYa)}</span>
+                    </div>
+                    <div class="gasto-item" style="font-weight: bold; background: #f8f9fa;">
+                        <span>TOTAL INGRESOS</span>
+                        <span>${formatMoney(totalIngresos)}</span>
+                    </div>
+                    <div class="gasto-item" style="background: #d1ecf1;">
+                        <span>- Fondo de Caja Inicial (Sencillo)</span>
+                        <span>- ${formatMoney(fondoCaja)}</span>
+                    </div>
+                    <div class="gasto-item" style="font-weight: bold; background: #e7f3ff;">
+                        <span>= Efectivo Real del Día</span>
+                        <span>${formatMoney(efectivoReal)}</span>
+                    </div>
+                    <div class="gasto-item" style="background: #fff3cd;">
+                        <span>+ Cenas (Javier + Chompi) - Ya salieron de caja</span>
+                        <span>+ ${formatMoney(totalCenas)}</span>
+                    </div>
+                    <div class="gasto-item" style="font-weight: bold; background: #e7f3ff;">
+                        <span>= Total a Comparar</span>
+                        <span>${formatMoney(ingresosConCenas)}</span>
+                    </div>
+                    <div class="gasto-item" style="margin-top: 15px;">
+                        <span>Total Ventas (Según Inventario)</span>
+                        <span>${formatMoney(ventasTotales)}</span>
+                    </div>
+                    <div class="gasto-item" style="color: ${diferenciaCaja >= 0 ? '#28a745' : '#dc3545'}; font-weight: bold; font-size: 1.1em; margin-top: 10px;">
+                        <span>DIFERENCIA (Faltante/Sobrante)</span>
+                        <span>${formatMoney(diferenciaCaja)} ${diferenciaCaja >= 0 ? '✅' : '⚠️'}</span>
+                    </div>
+                </div>
+
+                <div class="gastos-fijos" style="margin-top: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">Desglose de Gastos</h3>
+                    <div class="gasto-item">
+                        <span>Gastos Operativos Fijos</span>
+                        <span>${formatMoney(gastosFijos)}</span>
+                    </div>
+                    <div class="gasto-item">
+                        <span>Gastos Adicionales (Varios)</span>
+                        <span>${formatMoney(gastosAdicionales)}</span>
+                    </div>
+                    <div class="gasto-item" style="font-weight: bold; font-size: 1.1em; background: #f8f9fa; color: #dc3545;">
+                        <span>TOTAL GASTOS (para Ganancia Neta)</span>
+                        <span>${formatMoney(totalGastos)}</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <strong>ℹ️ Gastos Informativos (no afectan Ganancia Neta):</strong><br>
+                    • Producción de Adri: ${formatMoney(produccionAdri)} (${totalPalitosAdri} palitos) - Solo info<br>
+                    • Cena de Javier: ${formatMoney(cenaJavier)} - Se suma en diferencia de caja<br>
+                    • Cena de Chompi: ${formatMoney(cenaChompi)} - Se suma en diferencia de caja<br>
+                    <strong>Total Informativo: ${formatMoney(gastosInformativos)}</strong><br>
+                    <small style="opacity: 0.8;">*Las cenas se suman al total para calcular diferencia (porque ya salieron de caja)</small>
+                </div>
+
+                ${Math.abs(diferenciaCaja) > 0 ? `
+                    <div class="alert ${diferenciaCaja >= 0 ? 'alert-success' : 'alert-warning'}">
+                        ${diferenciaCaja > 0 
+                            ? `Hay un sobrante de ${formatMoney(diferenciaCaja)} en caja` 
+                            : `Falta ${formatMoney(Math.abs(diferenciaCaja))} en caja`
+                        }
+                    </div>
+                ` : ''}
+            `;
+
+            renderGastos();
+        }
+
+        function saveCierre() {
+            const selectedDate = currentCierreDate;
+            
+            // Recopilar datos del arqueo
+            const arqueoCaja = {};
+            billetes.forEach(valor => {
+                arqueoCaja[`billete-${valor}`] = parseInt(document.getElementById(`billete-${valor}`).value) || 0;
+            });
+            monedas.forEach(valor => {
+                arqueoCaja[`moneda-${valor}`] = parseInt(document.getElementById(`moneda-${valor}`).value) || 0;
+            });
+
+            // Calcular totales
+            let totalCaja = 0;
+            billetes.forEach(valor => {
+                totalCaja += arqueoCaja[`billete-${valor}`] * valor;
+            });
+            monedas.forEach(valor => {
+                totalCaja += arqueoCaja[`moneda-${valor}`] * valor;
+            });
+            
+            // Obtener tarjetas y pedidos ya
+            const tarjetas = parseInt(document.getElementById('tarjetas').value) || 0;
+            const pedidosYa = parseInt(document.getElementById('pedidosYa').value) || 0;
+            const totalIngresos = totalCaja + tarjetas + pedidosYa;
+            
+            // Fondo de caja inicial
+            const fondoCaja = parseInt(document.getElementById('fondoCaja').value) || 300000;
+            
+            // Obtener cenas (afectan diferencia, no ganancia)
+            const cenaJavier = parseInt(document.getElementById('cenaJavier').value) || 0;
+            const cenaChompi = parseInt(document.getElementById('cenaChompi').value) || 0;
+            const totalCenas = cenaJavier + cenaChompi;
+            
+            // Calcular producción de Adri (SOLO INFORMATIVO)
+            let totalPalitosAdri = 0;
+            const productosAdri = ['ASADITO CARNE', 'ASADITO CERDO', 'ALITA DE POLLO'];
+            
+            DB.products.forEach(p => {
+                if (productosAdri.includes(p.name)) {
+                    const inv = DB.inventory[selectedDate][p.id] || { produced: 0 };
+                    totalPalitosAdri += (inv.produced || 0);
+                }
+            });
+            
+            const produccionAdri = totalPalitosAdri * 250;
+            const gastosInformativos = totalCenas + produccionAdri;
+
+            // Calcular ganancia bruta
+            let gananciaVentas = 0;
+            DB.products.forEach(p => {
+                const inv = DB.inventory[selectedDate][p.id] || { sold: 0 };
+                gananciaVentas += (inv.sold || 0) * p.margin;
+            });
+
+            // Gastos que SÍ afectan ganancia (solo fijos + adicionales)
+            const gastosFijos = 285000;
+            const gastosAdicionales = (DB.gastos[selectedDate] || []).reduce((sum, g) => sum + g.monto, 0);
+            const totalGastos = gastosFijos + gastosAdicionales;
+
+            // Ganancia neta (sin cenas ni producción de Adri)
+            const gananciaNeta = gananciaVentas - totalGastos;
+
+            // Guardar registro
+            const selectedDateObj = new Date(selectedDate + 'T12:00:00');
+            const record = {
+                date: selectedDate,
+                displayDate: selectedDateObj.toLocaleDateString('es-PY'),
+                arqueoCaja,
+                totalCaja,
+                fondoCaja,
+                tarjetas,
+                pedidosYa,
+                totalIngresos,
+                cenaJavier,
+                cenaChompi,
+                totalCenas,
+                produccionAdri,
+                totalPalitosAdri,
+                gastosInformativos,
+                gastosFijos,
+                gananciaVentas,
+                gastosAdicionales,
+                totalGastos,
+                gananciaNeta,
+                inventory: JSON.parse(JSON.stringify(DB.inventory[selectedDate] || {})),
+                gastos: JSON.parse(JSON.stringify(DB.gastos[selectedDate] || []))
+            };
+
+            // Evitar duplicados
+            DB.dailyRecords = DB.dailyRecords.filter(r => r.date !== selectedDate);
+            DB.dailyRecords.push(record);
+
+            saveData();
+            
+            
+            const dateDisplay = selectedDateObj.toLocaleDateString('es-PY');
+            alert(`✅ Cierre del ${dateDisplay} guardado correctamente`);
+            renderHistorial();
+        }
+
+        function renderHistorial() {
+            const container = document.getElementById('historialList');
+            
+            if (DB.dailyRecords.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d;">No hay registros guardados</p>';
+                return;
+            }
+
+            const sorted = [...DB.dailyRecords].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            container.innerHTML = sorted.map(record => `
+                <div class="card" style="margin-bottom: 20px;">
+                    <h3 style="color: #667eea;">${record.displayDate}</h3>
+                    
+                    <div class="stats-grid" style="margin: 20px 0;">
+                        <div class="stat-card" style="border-left-color: #28a745;">
+                            <div class="stat-label">Ganancia Bruta</div>
+                            <div class="stat-value" style="color: #28a745;">${formatMoney(record.gananciaVentas)}</div>
+                        </div>
+                        <div class="stat-card" style="border-left-color: #667eea;">
+                            <div class="stat-label">Gastos Fijos</div>
+                            <div class="stat-value" style="color: #667eea;">${formatMoney(record.gastosFijos || 285000)}</div>
+                        </div>
+                        <div class="stat-card" style="border-left-color: #fd7e14;">
+                            <div class="stat-label">Gastos Adicionales</div>
+                            <div class="stat-value" style="color: #fd7e14;">${formatMoney(record.gastosAdicionales || 0)}</div>
+                        </div>
+                        <div class="stat-card" style="border-left-color: #dc3545;">
+                            <div class="stat-label">Total Gastos</div>
+                            <div class="stat-value" style="color: #dc3545;">${formatMoney(record.totalGastos)}</div>
+                        </div>
+                        <div class="stat-card" style="border-left-color: ${record.gananciaNeta >= 0 ? '#28a745' : '#dc3545'};">
+                            <div class="stat-label">Ganancia Neta</div>
+                            <div class="stat-value" style="color: ${record.gananciaNeta >= 0 ? '#28a745' : '#dc3545'};">
+                                ${formatMoney(record.gananciaNeta)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid" style="margin: 20px 0; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                        <div class="stat-card">
+                            <div class="stat-label">Efectivo en Caja</div>
+                            <div class="stat-value">${formatMoney(record.totalCaja)}</div>
+                        </div>
+                        <div class="stat-card" style="border-left-color: #17a2b8;">
+                            <div class="stat-label">Tarjetas</div>
+                            <div class="stat-value">${formatMoney(record.tarjetas || 0)}</div>
+                        </div>
+                        <div class="stat-card" style="border-left-color: #ffc107;">
+                            <div class="stat-label">Pedidos Ya</div>
+                            <div class="stat-value">${formatMoney(record.pedidosYa || 0)}</div>
+                        </div>
+                        <div class="stat-card" style="border-left-color: #667eea;">
+                            <div class="stat-label">Total Ingresos</div>
+                            <div class="stat-value" style="color: #667eea;">${formatMoney(record.totalIngresos || record.totalCaja)}</div>
+                        </div>
+                    </div>
+                    
+                    ${(record.gastosInformativos && record.gastosInformativos > 0) ? `
+                        <div class="alert alert-info">
+                            <strong>ℹ️ Gastos Informativos (no afectan Ganancia Neta):</strong><br>
+                            ${record.produccionAdri ? `• Producción de Adri: ${formatMoney(record.produccionAdri)} (${record.totalPalitosAdri} palitos)<br>` : ''}
+                            ${record.cenaJavier ? `• Cena de Javier: ${formatMoney(record.cenaJavier)}<br>` : ''}
+                            ${record.cenaChompi ? `• Cena de Chompi: ${formatMoney(record.cenaChompi)}<br>` : ''}
+                            <strong>Total Informativo: ${formatMoney(record.gastosInformativos)}</strong>
+                        </div>
+                    ` : ''}
+
+                    <details>
+                        <summary style="cursor: pointer; color: #667eea; font-weight: bold; padding: 10px;">
+                            Ver detalles completos
+                        </summary>
+                        <div style="margin-top: 15px;">
+                            <h4>Ventas del día:</h4>
+                            ${renderHistorialVentas(record)}
+                            
+                            <h4 style="margin-top: 20px;">💰 Gastos Operativos Fijos: ${formatMoney(record.gastosFijos || 285000)}</h4>
+                            <ul style="margin-top: 10px;">
+                                <li>Javier (Cajero): ${formatMoney(100000)}</li>
+                                <li>Germán Chompi (Parrillero): ${formatMoney(110000)}</li>
+                                <li>Carbón: ${formatMoney(40000)}</li>
+                                <li>Gastos Varios: ${formatMoney(35000)}</li>
+                            </ul>
+                            
+                            <h4 style="margin-top: 20px; color: #ffc107;">🍽️ Gastos Variables de Producción: ${formatMoney(record.gastosProduccion || 0)}</h4>
+                            <ul style="margin-top: 10px;">
+                                ${record.produccionAdri ? `<li>Producción de Adri (${record.totalPalitosAdri || 0} palitos × 250 Gs): ${formatMoney(record.produccionAdri)}</li>` : ''}
+                                ${record.cenaJavier ? `<li>Cena de Javier: ${formatMoney(record.cenaJavier)}</li>` : ''}
+                                ${record.cenaChompi ? `<li>Cena de Chompi: ${formatMoney(record.cenaChompi)}</li>` : ''}
+                            </ul>
+                            
+                            <h4 style="margin-top: 20px;">📝 Gastos Adicionales: ${formatMoney(record.gastosAdicionales || 0)}</h4>
+                            ${record.gastos && record.gastos.length > 0 ? `
+                                <ul style="margin-top: 10px;">
+                                    ${record.gastos.map(g => `<li>${g.concepto}: ${formatMoney(g.monto)}</li>`).join('')}
+                                </ul>
+                            ` : '<p style="color: #6c757d;">No hay gastos adicionales</p>'}
+                            
+                            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #dc3545;">
+                                <strong style="font-size: 1.1em;">TOTAL GASTOS DEL DÍA: ${formatMoney(record.totalGastos)}</strong>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            `).join('');
+        }
+
+        function renderHistorialVentas(record) {
+            let html = '<table><thead><tr><th>Producto</th><th>Vendido</th><th>Ganancia</th></tr></thead><tbody>';
+            
+            DB.products.forEach(p => {
+                const inv = record.inventory[p.id];
+                if (inv && inv.sold > 0) {
+                    const ganancia = inv.sold * p.margin;
+                    html += `<tr>
+                        <td>${p.name}</td>
+                        <td>${inv.sold}</td>
+                        <td>${formatMoney(ganancia)}</td>
+                    </tr>`;
+                }
+            });
+            
+            html += '</tbody></table>';
+            return html;
+        }
+
+        // FUNCIONES DE SINCRONIZACIÓN
+        function generateSyncCode() {
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            DB.syncCode = code;
+            DB.lastSync = new Date().toISOString();
+            saveData();
+            
+            // Guardar en la nube
+            try {
+                window.localStorage.setItem(`sync-${code}`, JSON.stringify(DB));
+                showSyncActive();
+                addSyncLog('✅ Código de sincronización generado');
+                alert(`✅ Código generado: ${code}\n\nUsa este código en tus otros dispositivos para sincronizar.`);
+            } catch (error) {
+                alert('Error al generar código. Intenta nuevamente.');
+            }
+        }
+
+        function connectWithCode() {
+            const code = document.getElementById('syncCodeInput').value.trim();
+            
+            if (code.length !== 6) {
+                alert('El código debe tener 6 dígitos');
+                return;
+            }
+
+            try {
+                const syncData = window.localStorage.getItem(`sync-${code}`);
+                if (!syncData) {
+                    alert('❌ Código no encontrado. Verifica que sea correcto.');
+                    return;
+                }
+
+                const data = JSON.parse(syncData);
+                
+                if (confirm('¿Deseas sincronizar con este código? Esto reemplazará tus datos locales.')) {
+                    Object.assign(DB, data);
+                    DB.syncCode = code;
+                    DB.lastSync = new Date().toISOString();
+                    saveData();
+                    
+                    renderProducts();
+                    renderInventory();
+                    renderHistorial();
+                    showSyncActive();
+                    addSyncLog('✅ Sincronización exitosa');
+                    alert('✅ Datos sincronizados correctamente');
+                }
+            } catch (error) {
+                alert('Error al conectar. Intenta nuevamente.');
+            }
+        }
+
+        function manualSync() {
+            if (!DB.syncCode) {
+                alert('No hay código de sincronización activo');
+                return;
+            }
+
+            syncToLocalCode();
+            alert('✅ Datos sincronizados');
+        }
+
+        function syncToLocalCode() {
+            if (!DB.syncCode) return;
+
+            try {
+                DB.lastSync = new Date().toISOString();
+                window.localStorage.setItem(`sync-${DB.syncCode}`, JSON.stringify(DB));
+                updateSyncStatus('synced');
+                addSyncLog('🔄 Sincronizado');
+            } catch (error) {
+                console.error('Error en sincronización:', error);
+            }
+        }
+
+        function autoSync() {
+            if (!DB.syncCode) return;
+
+            try {
+                const cloudData = window.localStorage.getItem(`sync-${DB.syncCode}`);
+                if (cloudData) {
+                    const data = JSON.parse(cloudData);
+                    const cloudTime = new Date(data.lastSync);
+                    const localTime = new Date(DB.lastSync);
+
+                    if (cloudTime > localTime) {
+                        Object.assign(DB, data);
+                        saveData();
+                        renderProducts();
+                        renderInventory();
+                        renderHistorial();
+                        addSyncLog('⬇️ Datos actualizados desde la nube');
+                    } else {
+                        syncToLocalCode();
+                    }
+                }
+            } catch (error) {
+                console.error('Error en auto-sincronización:', error);
+            }
+        }
+
+        function disconnectSync() {
+            if (confirm('¿Deseas desconectar la sincronización?\n\nTus datos locales se mantendrán, pero no se sincronizarán más.')) {
+                DB.syncCode = null;
+                DB.lastSync = null;
+                saveData();
+                checkSyncStatus();
+                alert('✅ Sincronización desconectada');
+            }
+        }
+
+        function downloadBackup() {
+            const dataStr = JSON.stringify(DB, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `asaditos-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            alert('✅ Respaldo descargado');
+        }
+
+        function checkSyncStatus() {
+            if (DB.syncCode) {
+                showSyncActive();
+            } else {
+                showSyncSetup();
+            }
+        }
+
+        function showSyncActive() {
+            document.getElementById('syncSetupArea').style.display = 'none';
+            document.getElementById('syncActiveArea').style.display = 'block';
+            document.getElementById('displaySyncCode').textContent = DB.syncCode;
+            updateSyncStatus('synced');
+        }
+
+        function showSyncSetup() {
+            document.getElementById('syncSetupArea').style.display = 'block';
+            document.getElementById('syncActiveArea').style.display = 'none';
+            updateSyncStatus('not-synced');
+        }
+
+        function updateSyncStatus(status) {
+            const statusEl = document.getElementById('syncStatus');
+            const iconEl = document.getElementById('syncIcon');
+            const textEl = document.getElementById('syncText');
+
+            if (status === 'synced') {
+                statusEl.className = 'sync-status synced';
+                iconEl.textContent = '✅';
+                textEl.textContent = 'Sincronizado';
+            } else if (status === 'syncing') {
+                statusEl.className = 'sync-status syncing';
+                iconEl.textContent = '🔄';
+                textEl.textContent = 'Sincronizando...';
+            } else {
+                statusEl.className = 'sync-status';
+                iconEl.textContent = '📱';
+                textEl.textContent = 'Sin sincronizar';
+            }
+        }
+
+        function addSyncLog(message) {
+            const logContainer = document.getElementById('syncLogContent');
+            if (!logContainer) return;
+
+            const time = new Date().toLocaleTimeString('es-PY');
+            const logEntry = document.createElement('div');
+            logEntry.style.padding = '5px 0';
+            logEntry.style.borderBottom = '1px solid #dee2e6';
+            logEntry.innerHTML = `<small>${time}</small> - ${message}`;
+            
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+
+            // Mantener solo los últimos 10 logs
+            while (logContainer.children.length > 10) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(DB, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `asaditos-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            alert('✅ Datos exportados correctamente');
+        }
+
+        function importData() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) {
+                alert('Por favor selecciona un archivo');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('¿Deseas importar estos datos? Esto reemplazará toda la información actual.')) {
+                        Object.assign(DB, data);
+                        saveData();
+                        
+                        renderProducts();
+                        renderInventory();
+                        renderHistorial();
+                        checkSyncStatus();
+                        
+                        alert('✅ Datos importados correctamente');
+                    }
+                } catch (error) {
+                    alert('❌ Error al leer el archivo. Asegúrate de que sea un archivo válido.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // UTILIDADES
+        function getTodayKey() {
+            return formatDateKey(new Date());
+        }
+
+        function formatDateKey(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('es-PY', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount) + ' Gs';
+        }
+
+        function saveData(reason = 'saveData') {
+            // Marca modificación local y guarda
+            DB.lastModified = Date.now();
+                        makeBackup('auto', DB);
+            localStorage.setItem('asaditosDB', JSON.stringify(DB));
+            console.log('💾 Guardado local:', reason, new Date(DB.lastModified).toLocaleString());
+            scheduleCloudSync(reason);
+        }
+
+        
+        // =============================
+        // Seguridad: Backups y restauración
+        // =============================
+
+        function hasAnyData(db) {
+            if (!db || typeof db !== 'object') return false;
+            try {
+                const productsOk = Array.isArray(db.products) && db.products.length > 0;
+                const invOk = (db.inventory && typeof db.inventory === 'object' && Object.keys(db.inventory).length > 0);
+                const gastosOk = (db.gastos && typeof db.gastos === 'object' && Object.keys(db.gastos).length > 0);
+                const cierresOk = (db.cierres && typeof db.cierres === 'object' && Object.keys(db.cierres).length > 0);
+                const historialOk = Array.isArray(db.historial) && db.historial.length > 0;
+                return productsOk || invOk || gastosOk || cierresOk || historialOk;
+            } catch { return false; }
+        }
+
+        function makeBackup(tag = 'auto', data = DB) {
+            try {
+                if (!hasAnyData(data)) return;
+
+                const now = Date.now();
+                const last = parseInt(localStorage.getItem('asaditosLastBackupTs') || '0', 10);
+                // Evitar spam: backup automático cada 2 horas (manual siempre hace)
+                if (tag === 'auto' && (now - last) < 2 * 60 * 60 * 1000) return;
+
+                const ts = new Date(now).toISOString().replace(/[:.]/g, '-');
+                const key = `asaditosBackup:${ts}:${tag}`;
+
+                const payload = {
+                    meta: { tag, ts: now, iso: new Date(now).toISOString(), binId: jsonbinId || null, app: 'asaditos' },
+                    data
+                };
+
+                localStorage.setItem(key, JSON.stringify(payload));
+
+                // Índice de backups (máx 30)
+                const idxKey = 'asaditosBackupsIndex';
+                const idx = JSON.parse(localStorage.getItem(idxKey) || '[]');
+                idx.unshift(key);
+                const trimmed = idx.slice(0, 30);
+                localStorage.setItem(idxKey, JSON.stringify(trimmed));
+                localStorage.setItem('asaditosLastBackupTs', String(now));
+
+                // Borrar backups viejos fuera del índice
+                idx.slice(30).forEach(k => { try { localStorage.removeItem(k); } catch {} });
+
+                console.log(`🛡️ Backup guardado (${tag})`);
+            } catch (e) {
+                console.warn('⚠️ No se pudo crear backup:', e);
+            }
+        }
+
+        function downloadJSON(filename, obj) {
+            const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                URL.revokeObjectURL(a.href);
+                a.remove();
+            }, 50);
+        }
+
+        function exportBackupNow() {
+            // Backup manual + descarga
+            makeBackup('manual', DB);
+            const iso = new Date().toISOString().slice(0, 10);
+            downloadJSON(`asaditos-backup-${iso}.json`, { meta: { exportedAt: new Date().toISOString(), binId: jsonbinId || null }, data: DB });
+        }
+
+        function importBackupJSONText(jsonText) {
+            let parsed;
+            try {
+                parsed = JSON.parse(jsonText);
+            } catch {
+                alert('❌ El archivo no es JSON válido.');
+                return;
+            }
+
+            const incoming = (parsed && parsed.data) ? parsed.data : parsed;
+            if (!incoming || typeof incoming !== 'object') {
+                alert('❌ Backup inválido.');
+                return;
+            }
+
+            if (!confirm('Vas a RESTAURAR datos desde un backup. Esto reemplaza lo actual en este dispositivo y lo sube a la nube. ¿Continuar?')) return;
+
+            // Backup de seguridad antes de restaurar
+            makeBackup('pre-restore', DB);
+
+            // Reemplazar DB de forma segura
+            Object.keys(DB).forEach(k => { try { delete DB[k]; } catch {} });
+            Object.assign(DB, incoming);
+
+            DB.lastModified = Date.now();
+            localStorage.setItem('asaditosDB', JSON.stringify(DB));
+
+            // Subir a nube
+            scheduleCloudSync('restoreBackup');
+
+            // Render
+            try { renderProducts(); } catch {}
+            try { renderInventory(); } catch {}
+            try { calculateTotals(); } catch {}
+            try { renderHistorial(); } catch {}
+
+            alert('✅ Backup restaurado y enviado a la nube.');
+        }
+
+        function wireBackupImportInput() {
+            const input = document.getElementById('backupImportFile');
+            if (!input) return;
+            input.addEventListener('change', async (ev) => {
+                const file = ev.target.files && ev.target.files[0];
+                if (!file) return;
+                const text = await file.text();
+                importBackupJSONText(text);
+                ev.target.value = '';
+            });
+        }
+
+
+        function loadData() {
+            const saved = localStorage.getItem('asaditosDB');
+            if (saved) {
+                const loaded = JSON.parse(saved);
+                DB.products = loaded.products || [];
+                DB.inventory = loaded.inventory || {};
+                DB.dailyRecords = loaded.dailyRecords || [];
+                DB.gastos = loaded.gastos || {};
+                DB.syncCode = loaded.syncCode || null;
+                DB.lastSync = loaded.lastSync || null;
+            }
+        }
+
+        // Click fuera del modal para cerrar
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        }
+
+        // IMPORTAR CSV DE PRODUCCIÓN
+        function importarCSV() {
+            const fileInput = document.getElementById('importCSVFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('❌ No se seleccionó ningún archivo');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n');
+                    
+                    // Detectar formato (Google Forms o CSV simple)
+                    const header = lines[0].toUpperCase();
+                    let isGoogleForms = false;
+                    let dateCol = 0, productCol = 1, producedCol = 2, leftoverCol = 3;
+                    
+                    // Formato Google Forms: "Marca temporal,Fecha,Producto,Producido,Sobrante"
+                    if (header.includes('MARCA TEMPORAL') || header.includes('TIMESTAMP')) {
+                        isGoogleForms = true;
+                        // Ajustar índices de columnas
+                        const headers = lines[0].split(',').map(h => h.trim().toUpperCase());
+                        dateCol = headers.findIndex(h => h.includes('FECHA') && !h.includes('MARCA'));
+                        productCol = headers.findIndex(h => h.includes('PRODUCTO'));
+                        producedCol = headers.findIndex(h => h.includes('PRODUCID') || h.includes('CANTIDAD PRODUCIDA'));
+                        leftoverCol = headers.findIndex(h => h.includes('SOBRANTE'));
+                        
+                        if (dateCol === -1) dateCol = 1; // Por defecto segunda columna
+                    }
+                    // Formato CSV simple: "FECHA,PRODUCTO,PRODUCIDO,SOBRANTE"
+                    else if (!header.includes('FECHA') && !header.includes('PRODUCTO')) {
+                        alert('❌ Formato de CSV no reconocido.\n\nFormatos aceptados:\n- CSV desde app de carga\n- CSV desde Google Forms/Sheets');
+                        return;
+                    }
+                    
+                    let fechasUnicas = {};
+                    let datosImportados = 0;
+                    let errores = [];
+                    
+                    // Procesar cada línea (empezando desde línea 1, saltando el header)
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+                        
+                        // Dividir respetando comillas (para Google Forms)
+                        const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
+                        const cleanParts = parts.map(p => p.replace(/^"|"$/g, '').trim());
+                        
+                        if (cleanParts.length < 4) continue;
+                        
+                        let fechaLinea = cleanParts[dateCol].trim();
+                        const nombreProducto = cleanParts[productCol].trim();
+                        const producido = parseInt(cleanParts[producedCol]) || 0;
+                        const sobrante = parseInt(cleanParts[leftoverCol]) || 0;
+                        
+                        // Convertir formato de fecha de Google Forms (dd/mm/yyyy) a yyyy-mm-dd
+                        if (fechaLinea.includes('/')) {
+                            const dateParts = fechaLinea.split('/');
+                            if (dateParts.length === 3) {
+                                // dd/mm/yyyy → yyyy-mm-dd
+                                fechaLinea = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+                            }
+                        }
+                        
+                        // Guardar fecha para cambiar al final
+                        if (!fechasUnicas[fechaLinea]) {
+                            fechasUnicas[fechaLinea] = 0;
+                        }
+                        fechasUnicas[fechaLinea]++;
+                        
+                        // Buscar el producto en la BD
+                        const producto = DB.products.find(p => p.name.toUpperCase() === nombreProducto.toUpperCase());
+                        
+                        if (producto) {
+                            // Crear inventario para esa fecha si no existe
+                            if (!DB.inventory[fechaLinea]) {
+                                DB.inventory[fechaLinea] = {};
+                            }
+                            
+                            // Inicializar inventario del producto si no existe
+                            if (!DB.inventory[fechaLinea][producto.id]) {
+                                DB.inventory[fechaLinea][producto.id] = {
+                                    produced: 0,
+                                    leftover: 0,
+                                    leftoverYesterday: 0,
+                                    sold: 0
+                                };
+                            }
+                            
+                            // Cargar los datos (acumular si hay múltiples entradas)
+                            DB.inventory[fechaLinea][producto.id].produced += producido;
+                            DB.inventory[fechaLinea][producto.id].leftover += sobrante;
+                            
+                            // Calcular vendido automáticamente
+                            const inv = DB.inventory[fechaLinea][producto.id];
+                            const leftoverYesterday = inv.leftoverYesterday || 0;
+                            const totalAvailable = leftoverYesterday + inv.produced;
+                            inv.sold = totalAvailable - inv.leftover;
+                            
+                            datosImportados++;
+                        } else {
+                            if (nombreProducto && !errores.includes(nombreProducto)) {
+                                errores.push(nombreProducto);
+                            }
+                        }
+                    }
+                    
+                    // Guardar y renderizar
+                    saveData();
+                    
+                    // Cambiar a la fecha más reciente importada
+                    const fechas = Object.keys(fechasUnicas).sort().reverse();
+                    if (fechas.length > 0) {
+                        currentInventoryDate = fechas[0];
+                        document.getElementById('inventoryDate').value = fechas[0];
+                        updateInventoryDateDisplay();
+                    }
+                    
+                    renderInventory();
+                    
+                    // Mostrar resultado
+                    let mensaje = `✅ Datos importados correctamente!\n\n`;
+                    mensaje += `📅 Fechas procesadas: ${fechas.join(', ')}\n`;
+                    mensaje += `📦 Registros importados: ${datosImportados}\n`;
+                    mensaje += `🗂️ Formato detectado: ${isGoogleForms ? 'Google Forms' : 'CSV Simple'}\n`;
+                    
+                    if (errores.length > 0) {
+                        mensaje += `\n⚠️ Productos no encontrados (ignorados):\n${errores.join(', ')}`;
+                        mensaje += `\n\n💡 Verifica que los nombres coincidan exactamente con tus productos.`;
+                    }
+                    
+                    alert(mensaje);
+                    
+                    // Limpiar input
+                    fileInput.value = '';
+                    
+                } catch (error) {
+                    alert('❌ Error al procesar el archivo CSV: ' + error.message);
+                    console.error('Error:', error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Iniciar
+        init();
+    </script>
+
+<button id="cloudFab" title="Sincronización" onclick="openCloudPanel()">☁️</button>
+</body>
+</html>
