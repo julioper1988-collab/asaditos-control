@@ -732,6 +732,7 @@
     </style>
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="manifest.webmanifest">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
@@ -749,7 +750,7 @@
             <button class="tab" onclick="switchTab('inventario', this)">📊 Inventario</button>
             <button class="tab" onclick="switchTab('cierre', this)">💰 Cierre</button>
             <button class="tab" onclick="switchTab('reportes', this)">📈 Reportes</button>
-            <button class="tab" onclick="switchTab('sync', this)">☁️ Sincronizar</button>
+            <button class="tab" onclick="switchTab('sync', this)">☁️ Nube/Backup</button>
         </div>
 
         <div class="content">
@@ -975,138 +976,89 @@
             </div>
 
             <!-- TAB SYNC -->
+            
+            <!-- TAB SYNC -->
             <div id="sync" class="tab-content">
                 <div class="card">
-                    <h2>Sincronización entre Dispositivos</h2>
-                    
+                    <h2>☁️ Nube (Supabase)</h2>
+
                     <div class="alert alert-info">
-                        <strong>ℹ️ ¿Cómo funciona?</strong><br>
-                        Genera un código único para sincronizar tus datos entre todos tus dispositivos (celular, tablet, computadora). Los datos se guardan en la nube de forma segura.
+                        <strong>ℹ️ Objetivo:</strong> guardar tus datos en Supabase para que se vean en todos tus dispositivos.
+                        <br>⚠️ Ya no se usa el método viejo de nube/sync.
                     </div>
 
-                    
-                    <div class="card" id="jsonbinPanel" style="margin-top: 15px;">
-                        <h3 style="margin-top: 0;">☁️ Nube (JSONBin) – Bin ID</h3>
-                        
-                        <div class="alert alert-info" style="margin-top: 10px;">
-                            <strong>🔐 API Key (JSONBin)</strong><br>
-                            Pegalo una vez y se guarda solo en este dispositivo (LocalStorage).
-                        </div>
-
+                    <div class="grid-2">
                         <div class="form-group">
-                            <label>API Key (X-Master-Key)</label>
-                            <input id="jsonbinKeyInput" type="password" placeholder="Pegá acá tu API Key de JSONBin">
+                            <label>Supabase URL</label>
+                            <input type="text" id="sbUrl" placeholder="https://TU-PROYECTO.supabase.co">
                         </div>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 10px;">
-                            <button class="btn btn-success" onclick="saveJsonbinKey()">💾 Guardar API Key</button>
-                            <button class="btn btn-danger" onclick="clearJsonbinKey()">🧹 Borrar API Key</button>
-                        </div>
-
-                        <div class="alert alert-warning" style="margin-top: 10px;">
-                            <strong>Importante:</strong> Para que varios dispositivos se sincronicen, <u>todos deben usar el mismo Bin ID</u>.
-                        </div>
-
-                        <div class="grid-2" style="align-items: end;">
-                            <div class="form-group">
-                                <label>Bin ID actual</label>
-                                <input id="jsonbinIdDisplay" type="text" readonly style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
-                            </div>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                <button class="btn btn-primary" onclick="copyJsonbinId()">📋 Copiar</button>
-                                <button class="btn btn-secondary" onclick="refreshJsonbinUI()">🔄 Actualizar</button>
-                            </div>
-                        </div>
-
                         <div class="form-group">
-                            <label>Usar otro Bin ID (pegar aquí)</label>
-                            <input id="jsonbinIdInput" type="text" placeholder="Pegá acá el Bin ID del otro dispositivo">
-                        </div>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            <button class="btn btn-success" onclick="useJsonbinIdFromInput()">✅ Usar este Bin</button>
-                            <button class="btn btn-danger" onclick="disconnectJsonbin()">🚪 Desconectar</button>
-                        </div>
-
-                        <div class="alert alert-info" style="margin-top: 15px;">
-                            Tip: después de cambiar el Bin ID, recargá la página. Si querés, tocá “Traer de la nube” para forzar.
-                        </div>
-
-                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-                            <button class="btn btn-secondary" onclick="loadFromCloud()">⬇️ Traer de la nube</button>
-                            <button class="btn btn-secondary" onclick="syncToCloud(true)">⬆️ Subir ahora</button>
-                            <button class="btn btn-secondary" onclick="exportBackupNow()">🛡️ Exportar backup</button>
-                            <label class="btn btn-secondary" style="cursor:pointer; margin:0;">
-                                ♻️ Importar backup
-                                <input id="backupImportFile" type="file" accept="application/json" style="display:none;">
-                            </label>
+                            <label>Supabase Anon Key</label>
+                            <input type="password" id="sbAnon" placeholder="Pegá acá tu anon key">
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label>Workspace ID (mismo en todos tus dispositivos)</label>
+                        <input type="text" id="sbWorkspace" placeholder="Ej: ASADITOS-EL-MEJOR">
+                    </div>
 
-<div class="sync-controls">
-                        <h3 style="color: #667eea; margin-bottom: 15px;">Configurar Sincronización</h3>
-                        
-                        <div id="syncSetupArea">
-                            <button class="btn btn-primary" onclick="generateSyncCode()" style="width: 100%; margin-bottom: 15px;">
-                                🔑 Generar Código de Sincronización
-                            </button>
-                            
-                            <div style="text-align: center; margin: 20px 0;">
-                                <strong>- O -</strong>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>¿Ya tienes un código? Ingrésalo aquí:</label>
-                                <input type="text" id="syncCodeInput" placeholder="Ingresa tu código de 6 dígitos" maxlength="6" style="text-align: center; font-size: 1.5em; letter-spacing: 5px;">
-                            </div>
-                            <button class="btn btn-success" onclick="connectWithCode()" style="width: 100%;">
-                                🔗 Conectar con este Código
-                            </button>
-                        </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="btn btn-success" onclick="saveSupabaseConfig()">💾 Guardar</button>
+                        <button class="btn btn-info" onclick="testSupabase()">🔎 Probar conexión</button>
+                        <button class="btn btn-danger" onclick="disconnectSupabase()">🚪 Desconectar</button>
+                    </div>
 
-                        <div id="syncActiveArea" style="display: none;">
-                            <div class="alert alert-success">
-                                ✅ Sincronización Activa
-                            </div>
-                            
-                            <div class="sync-code" id="displaySyncCode"></div>
-                            
-                            <p style="text-align: center; color: #6c757d; margin: 15px 0;">
-                                Usa este código en tus otros dispositivos para sincronizar
-                            </p>
-
-                            <div style="text-align: center; margin-top: 20px;">
-                                <button class="btn btn-info" onclick="manualSync()">🔄 Sincronizar Ahora</button>
-                                <button class="btn btn-warning" onclick="downloadBackup()">💾 Descargar Respaldo</button>
-                                <button class="btn btn-danger" onclick="disconnectSync()">🔌 Desconectar</button>
-                            </div>
-
-                            <div id="syncLog" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; max-height: 200px; overflow-y: auto;">
-                                <strong>Registro de Sincronización:</strong>
-                                <div id="syncLogContent"></div>
-                            </div>
-                        </div>
+                    <div class="alert alert-warning" style="margin-top: 15px;">
+                        <strong>Tabla requerida en Supabase:</strong><br>
+                        <code>asaditos_state</code> con columnas: <code>id</code> (text, PK), <code>data</code> (jsonb), <code>updated_at</code> (timestamptz)
                     </div>
                 </div>
 
                 <div class="card">
-                    <h2>Importar/Exportar Datos</h2>
-                    
+                    <h2>Sincronización</h2>
+
                     <div class="grid-2">
                         <div>
-                            <h3 style="color: #667eea;">Exportar Datos</h3>
-                            <p style="color: #6c757d; margin: 10px 0;">Descarga todos tus datos como respaldo</p>
-                            <button class="btn btn-primary" onclick="exportData()" style="width: 100%;">📥 Descargar Datos</button>
+                            <button class="btn btn-primary" onclick="cloudPull()" style="width:100%;">⬇️ Traer de la nube</button>
                         </div>
-                        
                         <div>
-                            <h3 style="color: #667eea;">Importar Datos</h3>
-                            <p style="color: #6c757d; margin: 10px 0;">Restaura datos desde un archivo de respaldo</p>
-                            <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
-                            <button class="btn btn-success" onclick="importData()" style="width: 100%;">📤 Importar Datos</button>
+                            <button class="btn btn-primary" onclick="cloudPush(true)" style="width:100%;">⬆️ Subir ahora</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label style="display:flex; gap:10px; align-items:center; font-weight:600;">
+                            <input type="checkbox" id="sbAutoSync" onchange="toggleAutoSync(this.checked)">
+                            Auto-sync (sube al guardar y trae cada 10s)
+                        </label>
+                    </div>
+
+                    <div id="sbStatus" class="alert alert-info" style="margin-top: 10px;">
+                        Estado: sin configurar
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Backup (Importar/Exportar)</h2>
+
+                    <div class="grid-2">
+                        <div>
+                            <h3 style="color: #667eea;">Exportar Backup</h3>
+                            <p style="color: #6c757d; margin: 10px 0;">Descarga tus datos en un archivo JSON</p>
+                            <button class="btn btn-primary" onclick="exportData()" style="width: 100%;">📥 Descargar backup</button>
+                        </div>
+
+                        <div>
+                            <h3 style="color: #667eea;">Importar Backup</h3>
+                            <p style="color: #6c757d; margin: 10px 0;">Restaura tus datos desde un archivo JSON</p>
+                            <input type="file" id="importFile" accept="application/json,.json" style="margin-bottom: 10px;">
+                            <button class="btn btn-success" onclick="importData()" style="width: 100%;">📤 Importar backup</button>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -1153,227 +1105,263 @@
             inventory: {},
             dailyRecords: [],
             gastos: {},
-            syncCode: null,
-            lastSync: null,
+            cloudWorkspace: null,
             lastModified: 0,
             lastCloudModified: 0
         };
 
-        // ===== JSONBIN SYNC =====
-        let JSONBIN_API_KEY = localStorage.getItem('jsonbinKey') || '';
-        let jsonbinId = localStorage.getItem('jsonbinId') || null;
         
-        async function initCloud() {
-            if (!JSONBIN_API_KEY) { console.warn('⚠️ Falta API Key (JSONBin). Cargala en ☁️ Sincronizar.'); return; }
+        // ===== SUPABASE CLOUD =====
+// 🔒 Configuración fija (para GitHub + Supabase). Cambiar SOLO si vos querés.
+const SB_FIXED = {
+    url: "https://gqgzluwptmgvzdewjusp.supabase.co",
+    anon: "sb_publishable_Gic4Jhw3keO6MyZtKV2nZA_jjXYiCnJ",
+    workspace: "ASADITOS-EL-MEJOR"
+};
 
-            console.log("🔵 Iniciando JSONBin...");
-            if (!jsonbinId) {
-                console.log("🔵 No hay Bin ID, creando nuevo...");
-                try {
-                    const res = await fetch('https://api.jsonbin.io/v3/b', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY},
-                        body: JSON.stringify(DB)
-                    });
-                    
-                    if (!res.ok) {
-                        console.error("❌ Error creando Bin:", res.status, res.statusText);
-                        const errorText = await res.text();
-                        console.error("❌ Respuesta:", errorText);
-                        return;
-                    }
-                    
-                    const data = await res.json();
-                    jsonbinId = data.metadata.id;
-                    localStorage.setItem('jsonbinId', jsonbinId);
-                    console.log("✅ Bin creado:", jsonbinId);
-                    refreshJsonbinUI();
-                } catch(e) {
-                    console.error("❌ Error en initCloud:", e);
+// Si en algún momento querés volver a configurarlo desde la UI, poné SB_USE_FIXED = false.
+const SB_USE_FIXED = true;
+
+let SB_URL = SB_USE_FIXED ? SB_FIXED.url : (localStorage.getItem('sbUrl') || '');
+let SB_ANON = SB_USE_FIXED ? SB_FIXED.anon : (localStorage.getItem('sbAnon') || '');
+let SB_WORKSPACE = SB_USE_FIXED ? SB_FIXED.workspace : (localStorage.getItem('sbWorkspace') || '');
+
+// Auto-sync siempre ON para que sea “a prueba de balas”
+let SB_AUTOSYNC = true;
+
+// Persistimos igual para que todos los módulos internos sigan funcionando sin tocar nada más
+try {
+    localStorage.setItem('sbUrl', SB_URL);
+    localStorage.setItem('sbAnon', SB_ANON);
+    localStorage.setItem('sbWorkspace', SB_WORKSPACE);
+    localStorage.setItem('sbAutoSync', '1');
+} catch {}
+
+
+        let supabaseClient = null;
+
+        function initSupabase() {
+            try {
+                if (window.supabase && SB_URL && SB_ANON) {
+                    supabaseClient = window.supabase.createClient(SB_URL, SB_ANON);
+                } else {
+                    supabaseClient = null;
                 }
-            } else {
-                console.log("✅ Bin ID existente:", jsonbinId);
-                refreshJsonbinUI();
+            } catch (e) {
+                console.warn('No se pudo inicializar Supabase:', e);
+                supabaseClient = null;
+            }
+            refreshSupabaseUI();
+        }
+
+        function refreshSupabaseUI() {
+            const urlEl = document.getElementById('sbUrl');
+            const anonEl = document.getElementById('sbAnon');
+            const wsEl = document.getElementById('sbWorkspace');
+            const autoEl = document.getElementById('sbAutoSync');
+
+            if (urlEl) urlEl.value = SB_URL || '';
+            if (wsEl) wsEl.value = SB_WORKSPACE || '';
+            if (autoEl) autoEl.checked = !!SB_AUTOSYNC;
+
+            // Por seguridad, no mostramos la key real si ya está guardada
+            if (anonEl) anonEl.value = SB_ANON ? '********' : '';
+
+            // Si usamos config fija, bloqueamos edición para evitar errores
+            if (SB_USE_FIXED) {
+                if (urlEl) { urlEl.disabled = true; urlEl.style.opacity = 0.7; }
+                if (anonEl) { anonEl.disabled = true; anonEl.style.opacity = 0.7; }
+                if (wsEl) { wsEl.disabled = true; wsEl.style.opacity = 0.7; }
+                if (autoEl) { autoEl.checked = true; autoEl.disabled = true; autoEl.style.opacity = 0.7; }
+            }
+
+            updateCloudStatus();
+        }
+
+        function updateCloudStatus(extraMsg = '') {
+            const status = document.getElementById('sbStatus');
+            const headerStatus = document.getElementById('syncStatus');
+            const icon = document.getElementById('syncIcon');
+            const textEl = document.getElementById('syncText');
+
+            const ok = !!(supabaseClient && SB_WORKSPACE);
+            const msg = ok
+                ? `Estado: conectado ✅ (Workspace: ${SB_WORKSPACE})${extraMsg ? ' — ' + extraMsg : ''}`
+                : `Estado: sin configurar${extraMsg ? ' — ' + extraMsg : ''}`;
+
+            if (status) {
+                status.className = ok ? 'alert alert-success' : 'alert alert-info';
+                status.textContent = msg;
+            }
+            if (headerStatus && icon && textEl) {
+                headerStatus.classList.remove('synced', 'syncing');
+                if (ok) {
+                    headerStatus.classList.add('synced');
+                    icon.textContent = '☁️';
+                    textEl.textContent = 'Nube lista';
+                } else {
+                    icon.textContent = '🔄';
+                    textEl.textContent = 'Solo local';
+                }
             }
         }
-        
-        
-        
-        // ====== JSONBin UI helpers ======
-        function refreshJsonbinUI() {
-            const el = document.getElementById('jsonbinIdDisplay');
-            if (el) el.value = jsonbinId || '';
-            refreshJsonbinKeyUI();
-        }
 
-        
+        function saveSupabaseConfig() {
+            const urlEl = document.getElementById('sbUrl');
+            const anonEl = document.getElementById('sbAnon');
+            const wsEl = document.getElementById('sbWorkspace');
 
-        function refreshJsonbinKeyUI(){
-            const inp = document.getElementById('jsonbinKeyInput');
-            if (!inp) return;
-            inp.value = JSONBIN_API_KEY ? '********' : '';
-        }
-        function saveJsonbinKey(){
-            const inp = document.getElementById('jsonbinKeyInput');
-            const val = (inp?.value || '').trim();
-            if (!val || val === '********'){
-                alert('Pegá tu API Key real (X-Master-Key).');
+            const url = (urlEl?.value || '').trim();
+            const anonRaw = (anonEl?.value || '').trim();
+            const ws = (wsEl?.value || '').trim();
+
+            if (!url || !ws) {
+                alert('Completá al menos: Supabase URL y Workspace ID.');
                 return;
             }
-            JSONBIN_API_KEY = val;
-            localStorage.setItem('jsonbinKey', JSONBIN_API_KEY);
-            if (inp) inp.value = '********';
-            alert('✅ API Key guardada en este dispositivo.');
-        }
-        function clearJsonbinKey(){
-            if(!confirm('¿Borrar API Key guardada en este dispositivo?')) return;
-            JSONBIN_API_KEY = '';
-            localStorage.removeItem('jsonbinKey');
-            refreshJsonbinKeyUI();
-            alert('✅ API Key borrada.');
-        }
-
-function copyJsonbinId() {
-            if (!jsonbinId) {
-                alert('No hay Bin ID todavía.');
+            if (!SB_ANON && (!anonRaw || anonRaw === '********')) {
+                alert('Pegá tu Supabase Anon Key.');
                 return;
             }
-            navigator.clipboard?.writeText(jsonbinId)
-                .then(() => alert('✅ Bin ID copiado: ' + jsonbinId))
-                .catch(() => {
-                    // Fallback
-                    const tmp = document.createElement('textarea');
-                    tmp.value = jsonbinId;
-                    document.body.appendChild(tmp);
-                    tmp.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tmp);
-                    alert('✅ Bin ID copiado: ' + jsonbinId);
-                });
+
+            SB_URL = url;
+            if (anonRaw && anonRaw !== '********') SB_ANON = anonRaw;
+            SB_WORKSPACE = ws;
+
+            localStorage.setItem('sbUrl', SB_URL);
+            localStorage.setItem('sbWorkspace', SB_WORKSPACE);
+            localStorage.setItem('sbAnon', SB_ANON);
+
+            initSupabase();
+            alert('✅ Configuración guardada en este dispositivo.');
         }
 
-        function useJsonbinIdFromInput() {
-            const inp = document.getElementById('jsonbinIdInput');
-            const val = (inp?.value || '').trim();
-            if (!val) {
-                alert('Pegá un Bin ID válido.');
-                return;
-            }
-            jsonbinId = val;
-            localStorage.setItem('jsonbinId', jsonbinId);
-            refreshJsonbinUI();
-            alert('✅ Listo. Ahora este dispositivo usa el Bin ID: ' + jsonbinId + '\n\nRecomendado: recargar la página.');
+        function disconnectSupabase() {
+            if (!confirm('¿Desconectar Supabase en este dispositivo? (no borra tus datos locales)')) return;
+            SB_URL = '';
+            SB_ANON = '';
+            SB_WORKSPACE = '';
+            SB_AUTOSYNC = false;
+
+            localStorage.removeItem('sbUrl');
+            localStorage.removeItem('sbAnon');
+            localStorage.removeItem('sbWorkspace');
+            localStorage.setItem('sbAutoSync', '0');
+
+            supabaseClient = null;
+            refreshSupabaseUI();
+            alert('✅ Desconectado.');
         }
 
-        function disconnectJsonbin() {
-            if (!confirm('¿Desconectar JSONBin en este dispositivo? (Se borra el Bin ID guardado localmente)')) return;
-            jsonbinId = null;
-            localStorage.removeItem('jsonbinId');
-            refreshJsonbinUI();
-            alert('✅ Desconectado. Recargá la página si querés crear un Bin nuevo.');
+        function toggleAutoSync(on) {
+            SB_AUTOSYNC = !!on;
+            localStorage.setItem('sbAutoSync', SB_AUTOSYNC ? '1' : '0');
+            updateCloudStatus(SB_AUTOSYNC ? 'auto-sync ON' : 'auto-sync OFF');
         }
 
-        function openCloudPanel() {
-            try {
-                switchTab('sync');
-                setTimeout(() => {
-                    const panel = document.getElementById('jsonbinPanel');
-                    if (panel) panel.scrollIntoView({behavior: 'smooth', block: 'start'});
-                }, 60);
-            } catch(e) {
-                console.warn('No se pudo abrir el panel de sincronización:', e);
-            }
-        }
-
-// ====== Sync control ======
-        let __cloudSyncTimer = null;
-        let __lastLocalEditAt = 0;
-
-        function scheduleCloudSync(reason = 'unknown') {
-            __lastLocalEditAt = Date.now();
-            if (__cloudSyncTimer) clearTimeout(__cloudSyncTimer);
-            console.log('🟡 Sync programado (1.5s):', reason);
-            __cloudSyncTimer = setTimeout(() => {
-                __cloudSyncTimer = null;
-                syncToCloud(false, reason);
-            }, 1500);
-        }
-
-        function pullIsLocked() {
-            // Evita que el pull pise cambios locales recientes
-            return (Date.now() - __lastLocalEditAt) < 8000;
-        }
-
-async function syncToCloud(force = false, reason = 'unknown') {
-            if (!JSONBIN_API_KEY) { console.warn('⚠️ Falta API Key (JSONBin).'); return; }
-
-            if (!jsonbinId) {
-                console.log("⚠️ No hay Bin ID, no se puede sincronizar");
+        async function testSupabase() {
+            if (!supabaseClient) {
+                alert('Primero configurá Supabase URL y Anon Key.');
                 return;
             }
             try {
-                // Si no hay cambios locales, no hagas PUT
-                if (!force && DB.lastCloudModified && DB.lastModified && DB.lastModified <= DB.lastCloudModified) {
-                    // Nada nuevo que subir
+                const { error } = await supabaseClient.from('asaditos_state').select('id').limit(1);
+                if (error) {
+                    console.error(error);
+                    alert('❌ No pude consultar la tabla asaditos_state.\nRevisá la tabla/RLS/políticas.\n\nDetalle: ' + error.message);
+                    return;
+                }
+                updateCloudStatus('conexión OK');
+                alert('✅ Conexión OK. Tabla accesible.');
+            } catch (e) {
+                console.error(e);
+                alert('❌ Error probando conexión: ' + (e?.message || e));
+            }
+        }
+
+        function hasAnyDataSafe(obj) {
+            try { return hasAnyData(obj); } catch { return !!obj; }
+        }
+
+        async function cloudPush(force = false) {
+            if (!supabaseClient || !SB_WORKSPACE) {
+                console.warn('⚠️ Supabase no configurado.');
+                return;
+            }
+            try {
+                // Si no hay cambios locales, no subas
+                if (!force && DB.lastCloudModified && DB.lastModified && DB.lastModified <= DB.lastCloudModified) return;
+
+                updateCloudStatus('subiendo...');
+                const payload = {
+                    id: SB_WORKSPACE,
+                    data: DB,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient
+                    .from('asaditos_state')
+                    .upsert(payload, { onConflict: 'id' });
+
+                if (error) {
+                    console.error(error);
+                    updateCloudStatus('error al subir');
                     return;
                 }
 
-                console.log("🔄 Sincronizando a la nube...", { reason, lastModified: DB.lastModified });
-
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
-                    body: JSON.stringify(DB)
-                });
-
-                if (res.ok) {
-                    DB.lastCloudModified = DB.lastModified || Date.now();
-                    localStorage.setItem('asaditosDB', JSON.stringify(DB));
-                    console.log("✅ Sincronizado exitosamente");
-                } else {
-                    console.error("❌ Error sincronizando:", res.status);
-                }
+                DB.lastCloudModified = DB.lastModified || Date.now();
+                localStorage.setItem('asaditosDB', JSON.stringify(DB));
+                updateCloudStatus('subido ✅');
             } catch (e) {
-                console.error("❌ Error en syncToCloud:", e);
+                console.error(e);
+                updateCloudStatus('error al subir');
             }
         }
-        
-        async function loadFromCloud() {
-            if (!jsonbinId) return;
-            if (!JSONBIN_API_KEY) { console.warn('⚠️ Falta API Key (JSONBin).'); return; }
-if (pullIsLocked()) {
+
+        async function cloudPull() {
+            if (!supabaseClient || !SB_WORKSPACE) {
+                alert('Primero configurá Supabase.');
+                return;
+            }
+            if (pullIsLocked()) {
                 console.log("⏳ Pull pausado: cambios locales recientes.");
                 return;
             }
 
             try {
-                console.log("📥 Cargando desde la nube...");
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinId}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
-                });
+                updateCloudStatus('trayendo...');
+                const { data, error } = await supabaseClient
+                    .from('asaditos_state')
+                    .select('data, updated_at')
+                    .eq('id', SB_WORKSPACE)
+                    .maybeSingle();
 
-                if (!res.ok) {
-                    console.error("❌ Error cargando:", res.status);
+                if (error) {
+                    console.error(error);
+                    updateCloudStatus('error al traer');
                     return;
                 }
 
-                const data = await res.json();
-                const cloud = (data && data.record) ? data.record : {};
+                const cloud = data?.data || null;
+
+                // Si no hay nada en nube, no pisamos local
+                if (!cloud) {
+                    updateCloudStatus('sin datos en nube');
+                    return;
+                }
+                if (!hasAnyDataSafe(cloud) && hasAnyDataSafe(DB)) {
+                    console.warn('🛡️ Nube vacía detectada: se mantiene local para evitar pérdida.');
+                    updateCloudStatus('nube vacía (se mantuvo local)');
+                    return;
+                }
+
                 const cloudModified = cloud.lastModified || 0;
                 const localModified = DB.lastModified || 0;
 
-                // Seguridad: si la nube viene vacía, NO pises datos locales
-                if (!hasAnyData(cloud) && hasAnyData(DB)) {
-                    console.warn('🛡️ Nube vacía detectada: se mantiene local para evitar pérdida.');
-                    return;
-                }
-
-                // Si la nube no es más nueva, no pises local
                 if (cloudModified && localModified && cloudModified <= localModified) {
                     DB.lastCloudModified = Math.max(DB.lastCloudModified || 0, cloudModified);
-                    // Guardamos el marcador, por si hubo cambios previos
                     localStorage.setItem('asaditosDB', JSON.stringify(DB));
-                    console.log("ℹ️ Nube no más nueva que local; se mantiene local.");
+                    updateCloudStatus('nube no más nueva');
                     return;
                 }
 
@@ -1386,13 +1374,141 @@ if (pullIsLocked()) {
                 calculateTotals();
                 renderHistorial();
 
-                console.log("✅ Datos cargados desde la nube");
+                updateCloudStatus('actualizado ✅');
             } catch (e) {
-                console.error("❌ Error en loadFromCloud:", e);
+                console.error(e);
+                updateCloudStatus('error al traer');
             }
         }
 
-        let currentEditingProductId = null;
+        function openCloudPanel() {
+            try {
+                switchTab('sync');
+                setTimeout(() => {
+                    const panel = document.getElementById('sync');
+                    if (panel) panel.scrollIntoView({behavior: 'smooth', block: 'start'});
+                }, 60);
+            } catch(e) {
+                console.warn('No se pudo abrir el panel de nube:', e);
+            }
+        }
+
+        // ====== Sync control (Supabase) ======
+        let __cloudSyncTimer = null;
+        let __lastLocalEditAt = 0;
+
+        function scheduleCloudSync(reason = 'unknown') {
+            __lastLocalEditAt = Date.now();
+            if (!SB_AUTOSYNC) return;
+            if (__cloudSyncTimer) clearTimeout(__cloudSyncTimer);
+            __cloudSyncTimer = setTimeout(() => {
+                __cloudSyncTimer = null;
+                cloudPushSafe(false, reason);
+            }, 1500);
+        }
+
+        function pullIsLocked() {
+            // Evita que el pull pise cambios locales recientes
+            return (Date.now() - __lastLocalEditAt) < 8000;
+        }
+
+
+        // ===== Realtime + Polling “a prueba de balas” =====
+        let __realtimeChannel = null;
+        let __pollIntervalMs = 8000;   // base
+        let __pollTimer = null;
+        let __cloudBusy = false;
+        let __lastPullAt = 0;
+
+        function canDoCloudOps() {
+            return !!(SB_AUTOSYNC && supabaseClient && SB_WORKSPACE);
+        }
+
+        async function cloudPullOnceSafe(source = 'poll') {
+            if (!canDoCloudOps()) return;
+            if (__cloudBusy) return;
+            if (pullIsLocked()) return;
+
+            __cloudBusy = true;
+            try {
+                await cloudPull();
+                __lastPullAt = Date.now();
+            } finally {
+                __cloudBusy = false;
+            }
+        }
+
+        async function cloudPushSafe(force = false, source = 'local') {
+            if (!canDoCloudOps()) return;
+            if (__cloudBusy) return;
+
+            __cloudBusy = true;
+            try {
+                await cloudPush(force);
+            } finally {
+                __cloudBusy = false;
+            }
+        }
+
+        function stopCloudBackgroundSync() {
+            try { if (__pollTimer) clearInterval(__pollTimer); } catch {}
+            __pollTimer = null;
+            try { if (__realtimeChannel && supabaseClient) supabaseClient.removeChannel(__realtimeChannel); } catch {}
+            __realtimeChannel = null;
+        }
+
+        function startCloudBackgroundSync() {
+            stopCloudBackgroundSync();
+            if (!canDoCloudOps()) return;
+
+            // 1) Pull inmediato al arrancar (sin pisar cambios locales recientes)
+            cloudPullOnceSafe('startup');
+
+            // 2) Polling (por si el realtime se corta o el celu duerme)
+            __pollTimer = setInterval(() => {
+                if (document.hidden) return;
+                // Si hace muy poquito ya hicimos pull (por realtime), no spameamos
+                if (Date.now() - __lastPullAt < Math.max(3000, __pollIntervalMs - 2000)) return;
+                cloudPullOnceSafe('poll');
+            }, __pollIntervalMs);
+
+            // 3) Realtime (si está habilitado en Supabase)
+            try {
+                if (__realtimeChannel) {
+                    supabaseClient.removeChannel(__realtimeChannel);
+                    __realtimeChannel = null;
+                }
+
+                __realtimeChannel = supabaseClient
+                    .channel('asaditos_state_changes_' + SB_WORKSPACE)
+                    .on('postgres_changes', {
+                        event: '*',
+                        schema: 'public',
+                        table: 'asaditos_state',
+                        filter: 'id=eq.' + SB_WORKSPACE
+                    }, (payload) => {
+                        // Evita pisar cambios locales recientes; si estamos editando, el pull se diferirá
+                        cloudPullOnceSafe('realtime');
+                    })
+                    .subscribe((status) => {
+                        // status: SUBSCRIBED / TIMED_OUT / CHANNEL_ERROR / CLOSED
+                        if (status === 'SUBSCRIBED') updateCloudStatus('realtime ON ✅');
+                        if (status === 'TIMED_OUT') updateCloudStatus('realtime timeout (poll activo)');
+                        if (status === 'CHANNEL_ERROR') updateCloudStatus('realtime error (poll activo)');
+                    });
+            } catch (e) {
+                console.warn('Realtime no disponible:', e);
+            }
+
+            // 4) Al volver a la pestaña / app, traer de nube sí o sí
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) cloudPullOnceSafe('visibility');
+            }, { passive: true });
+
+            window.addEventListener('focus', () => cloudPullOnceSafe('focus'), { passive: true });
+            window.addEventListener('online', () => cloudPullOnceSafe('online'), { passive: true });
+        }
+let currentEditingProductId = null;
         let currentInventoryDate = null;
         let currentCierreDate = null;
 
@@ -1403,9 +1519,8 @@ if (pullIsLocked()) {
         // Inicializar
         function init() {
             loadData();
-            initCloud();
-            wireBackupImportInput();
-            updateDate();
+            initSupabase();
+                        updateDate();
             
             // Inicializar fechas
             currentInventoryDate = getTodayKey();
@@ -1424,13 +1539,8 @@ if (pullIsLocked()) {
             if (DB.products.length === 0) {
                 loadInitialProducts();
             }
-
-            // Auto-sincronizar cada 10 segundos
-            setInterval(() => {
-                if (jsonbinId) {
-                    loadFromCloud();
-                }
-            }, 10000);
+            // Sync robusto (realtime + polling + pull al volver a la pestaña)
+            startCloudBackgroundSync();
         }
 
         function updateDate() {
@@ -1627,9 +1737,7 @@ if (pullIsLocked()) {
             } else if (tabName === 'reportes') {
                 renderHistorial();
             } else if (tabName === 'sync') {
-                checkSyncStatus();
-                refreshJsonbinUI();
-            }
+                checkSyncStatus();}
         }
 
         function addProduct() {
@@ -2536,186 +2644,27 @@ if (pullIsLocked()) {
         }
 
         // FUNCIONES DE SINCRONIZACIÓN
-        function generateSyncCode() {
-            const code = Math.floor(100000 + Math.random() * 900000).toString();
-            DB.syncCode = code;
-            DB.lastSync = new Date().toISOString();
-            saveData();
-            
-            // Guardar en la nube
-            try {
-                window.localStorage.setItem(`sync-${code}`, JSON.stringify(DB));
-                showSyncActive();
-                addSyncLog('✅ Código de sincronización generado');
-                alert(`✅ Código generado: ${code}\n\nUsa este código en tus otros dispositivos para sincronizar.`);
-            } catch (error) {
-                alert('Error al generar código. Intenta nuevamente.');
-            }
-        }
+        // (removido: sincronización antigua)
+        // (removido: sincronización antigua)
+        // (removido: sincronización antigua)
+        // (removido: sync antiguo)
 
-        function connectWithCode() {
-            const code = document.getElementById('syncCodeInput').value.trim();
-            
-            if (code.length !== 6) {
-                alert('El código debe tener 6 dígitos');
-                return;
-            }
+        // (removido: sync antiguo)
 
-            try {
-                const syncData = window.localStorage.getItem(`sync-${code}`);
-                if (!syncData) {
-                    alert('❌ Código no encontrado. Verifica que sea correcto.');
-                    return;
-                }
+        // (removido: sincronización antigua)
+        // (removido: sincronización antigua)
 
-                const data = JSON.parse(syncData);
-                
-                if (confirm('¿Deseas sincronizar con este código? Esto reemplazará tus datos locales.')) {
-                    Object.assign(DB, data);
-                    DB.syncCode = code;
-                    DB.lastSync = new Date().toISOString();
-                    saveData();
-                    
-                    renderProducts();
-                    renderInventory();
-                    renderHistorial();
-                    showSyncActive();
-                    addSyncLog('✅ Sincronización exitosa');
-                    alert('✅ Datos sincronizados correctamente');
-                }
-            } catch (error) {
-                alert('Error al conectar. Intenta nuevamente.');
-            }
-        }
-
-        function manualSync() {
-            if (!DB.syncCode) {
-                alert('No hay código de sincronización activo');
-                return;
-            }
-
-            syncToLocalCode();
-            alert('✅ Datos sincronizados');
-        }
-
-        function syncToLocalCode() {
-            if (!DB.syncCode) return;
-
-            try {
-                DB.lastSync = new Date().toISOString();
-                window.localStorage.setItem(`sync-${DB.syncCode}`, JSON.stringify(DB));
-                updateSyncStatus('synced');
-                addSyncLog('🔄 Sincronizado');
-            } catch (error) {
-                console.error('Error en sincronización:', error);
-            }
-        }
-
-        function autoSync() {
-            if (!DB.syncCode) return;
-
-            try {
-                const cloudData = window.localStorage.getItem(`sync-${DB.syncCode}`);
-                if (cloudData) {
-                    const data = JSON.parse(cloudData);
-                    const cloudTime = new Date(data.lastSync);
-                    const localTime = new Date(DB.lastSync);
-
-                    if (cloudTime > localTime) {
-                        Object.assign(DB, data);
-                        saveData();
-                        renderProducts();
-                        renderInventory();
-                        renderHistorial();
-                        addSyncLog('⬇️ Datos actualizados desde la nube');
-                    } else {
-                        syncToLocalCode();
-                    }
-                }
-            } catch (error) {
-                console.error('Error en auto-sincronización:', error);
-            }
-        }
-
-        function disconnectSync() {
-            if (confirm('¿Deseas desconectar la sincronización?\n\nTus datos locales se mantendrán, pero no se sincronizarán más.')) {
-                DB.syncCode = null;
-                DB.lastSync = null;
-                saveData();
-                checkSyncStatus();
-                alert('✅ Sincronización desconectada');
-            }
-        }
-
-        function downloadBackup() {
-            const dataStr = JSON.stringify(DB, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `asaditos-backup-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            alert('✅ Respaldo descargado');
-        }
 
         function checkSyncStatus() {
-            if (DB.syncCode) {
-                showSyncActive();
-            } else {
-                showSyncSetup();
-            }
+            // Estado de nube en el header + tab Sync
+            updateCloudStatus();
         }
+        // (removido: sincronización antigua)
+        // (removido: sincronización antigua)
+        // (removido: sync antiguo)
 
-        function showSyncActive() {
-            document.getElementById('syncSetupArea').style.display = 'none';
-            document.getElementById('syncActiveArea').style.display = 'block';
-            document.getElementById('displaySyncCode').textContent = DB.syncCode;
-            updateSyncStatus('synced');
-        }
+        // (removido: sincronización antigua)
 
-        function showSyncSetup() {
-            document.getElementById('syncSetupArea').style.display = 'block';
-            document.getElementById('syncActiveArea').style.display = 'none';
-            updateSyncStatus('not-synced');
-        }
-
-        function updateSyncStatus(status) {
-            const statusEl = document.getElementById('syncStatus');
-            const iconEl = document.getElementById('syncIcon');
-            const textEl = document.getElementById('syncText');
-
-            if (status === 'synced') {
-                statusEl.className = 'sync-status synced';
-                iconEl.textContent = '✅';
-                textEl.textContent = 'Sincronizado';
-            } else if (status === 'syncing') {
-                statusEl.className = 'sync-status syncing';
-                iconEl.textContent = '🔄';
-                textEl.textContent = 'Sincronizando...';
-            } else {
-                statusEl.className = 'sync-status';
-                iconEl.textContent = '📱';
-                textEl.textContent = 'Sin sincronizar';
-            }
-        }
-
-        function addSyncLog(message) {
-            const logContainer = document.getElementById('syncLogContent');
-            if (!logContainer) return;
-
-            const time = new Date().toLocaleTimeString('es-PY');
-            const logEntry = document.createElement('div');
-            logEntry.style.padding = '5px 0';
-            logEntry.style.borderBottom = '1px solid #dee2e6';
-            logEntry.innerHTML = `<small>${time}</small> - ${message}`;
-            
-            logContainer.insertBefore(logEntry, logContainer.firstChild);
-
-            // Mantener solo los últimos 10 logs
-            while (logContainer.children.length > 10) {
-                logContainer.removeChild(logContainer.lastChild);
-            }
-        }
 
         function exportData() {
             const dataStr = JSON.stringify(DB, null, 2);
@@ -2813,7 +2762,7 @@ if (pullIsLocked()) {
                 const key = `asaditosBackup:${ts}:${tag}`;
 
                 const payload = {
-                    meta: { tag, ts: now, iso: new Date(now).toISOString(), binId: jsonbinId || null, app: 'asaditos' },
+                    meta: { tag, ts: now, iso: new Date(now).toISOString(), binId: null || null, app: 'asaditos' },
                     data
                 };
 
@@ -2848,13 +2797,8 @@ if (pullIsLocked()) {
                 a.remove();
             }, 50);
         }
+        // (removido: sincronización antigua)
 
-        function exportBackupNow() {
-            // Backup manual + descarga
-            makeBackup('manual', DB);
-            const iso = new Date().toISOString().slice(0, 10);
-            downloadJSON(`asaditos-backup-${iso}.json`, { meta: { exportedAt: new Date().toISOString(), binId: jsonbinId || null }, data: DB });
-        }
 
         function importBackupJSONText(jsonText) {
             let parsed;
@@ -2894,30 +2838,23 @@ if (pullIsLocked()) {
 
             alert('✅ Backup restaurado y enviado a la nube.');
         }
+        // (removido: sincronización antigua)
 
-        function wireBackupImportInput() {
-            const input = document.getElementById('backupImportFile');
-            if (!input) return;
-            input.addEventListener('change', async (ev) => {
-                const file = ev.target.files && ev.target.files[0];
-                if (!file) return;
-                const text = await file.text();
-                importBackupJSONText(text);
-                ev.target.value = '';
-            });
-        }
 
 
         function loadData() {
             const saved = localStorage.getItem('asaditosDB');
-            if (saved) {
+            if (!saved) return;
+            try {
                 const loaded = JSON.parse(saved);
                 DB.products = loaded.products || [];
                 DB.inventory = loaded.inventory || {};
                 DB.dailyRecords = loaded.dailyRecords || [];
                 DB.gastos = loaded.gastos || {};
-                DB.syncCode = loaded.syncCode || null;
-                DB.lastSync = loaded.lastSync || null;
+                DB.lastModified = loaded.lastModified || 0;
+                DB.lastCloudModified = loaded.lastCloudModified || 0;
+            } catch(e) {
+                console.warn('No se pudo leer asaditosDB:', e);
             }
         }
 
@@ -3081,6 +3018,6 @@ if (pullIsLocked()) {
         init();
     </script>
 
-<button id="cloudFab" title="Sincronización" onclick="openCloudPanel()">☁️</button>
+<button id="cloudFab" title="Nube/Backup" onclick="openCloudPanel()">☁️</button>
 </body>
 </html>
